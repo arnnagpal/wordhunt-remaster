@@ -1,0 +1,23 @@
+{
+    "name": "wordhunt-utils",
+    "version": "1.0.0",
+    "main": "src/index.ts",
+    "type": "module",
+    "scripts": {
+        "build": "bun build src/index.ts --outdir dist",
+        "start": "bun run src/index.ts",
+        "dev": "bun run src/index.ts --watch"
+    },
+    "author": "Aryan Nagpal",
+    "license": "ISC",
+    "description": "Common types used for both svelte app and websocket",
+    "dependencies": {
+        "@types/node": "^22.7.4",
+        "dotenv": "^16.4.5",
+        "glob": "^11.0.0",
+        "mongoose": "^8.7.0",
+        "redis": "^4.7.0",
+        "redis-om": "^0.4.6",
+        "typescript": "^5.6.2"
+    }
+}

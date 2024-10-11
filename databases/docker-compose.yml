@@ -1,0 +1,28 @@
+name: wordhunt-dbs
+services:
+  redis-stack:
+    container_name: redis-stack
+    volumes:
+      - redis-db:/data
+    ports:
+      - 6379:6379
+      - 8001:8001
+    environment:
+      - REDIS_ARGS=--requirepass mypassword
+    image: redis/redis-stack:latest
+  mongodb:
+    container_name: mongodb
+    volumes:
+      - mongo-db:/bitnami/mongodb
+    ports:
+      - 27017:27017
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    image: bitnami/mongodb:latest
+volumes:
+  redis-db:
+    external: true
+    name: redis-db
+  mongo-db:
+    external: true
+    name: mongo-db

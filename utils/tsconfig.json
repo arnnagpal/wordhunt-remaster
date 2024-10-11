@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "esnext",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+    "module": "esnext",                                /* Specify what module code is generated. */
+	"allowJs": true,
+	"checkJs": true,
+    "noEmit": true,
+	"esModuleInterop": true,
+	"forceConsistentCasingInFileNames": true,
+	"resolveJsonModule": true,
+	"skipLibCheck": true,
+	"sourceMap": true,
+	"strict": true,
+    "moduleResolution": "bundler"
+  },
+  "include": [
+		"./src/**/*.ts",
+    	"./src/*.ts"
+	],
+	"exclude": [
+		"./node_modules/**",
+	]
+}
