@@ -42,6 +42,7 @@ export const loadGameHistory = async () => {
     activeGames.splice(0, activeGames.length);
 
     for await (const game of mongoGames) {
+        await fixGame(game.id);
         if (game.session_type === 1) {
             finishedGames.push({
                 _id: game._id,
@@ -75,6 +76,63 @@ export const saveGameHistory = async () => {
 
     for (const game of activeGames) {
         await saveGame(game);
+    }
+};
+
+export const fixGame = async (gameId: string) => {
+    // pull document from mongo
+    const game = await mongo.Game.findOne({ _id: gameId }).exec();
+    // check if exists
+    if (!game) {
+        return;
+    }
+
+    // now check for corrupt parameters: no winner property, and no username properties on all the players
+
+    // checking players first
+    let players = game.players as LiveGamePlayer[];
+    for (let i = 0; i < players.length; i++) {
+        let player = players[i];
+        if (!player.username) {
+            console.log(
+                "Fixing game param: username missing for " +
+                    player.id +
+                    " in game " +
+                    gameId
+            );
+            const user = await mongo.User.findOne({ _id: player.id }).exec();
+            if (user) {
+                player.username = user.username;
+            }
+        }
+    }
+
+    // checking winner
+    if (!game.winner && (game.ended_at || game.session_type === 1)) {
+        console.log("Fixing game param: winner missing for " + gameId);
+        // find winner
+        // check for tie first
+        let tie = true;
+        for (let i = 0; i < players.length; i++) {
+            if (players[i].score !== players[0].score) {
+                tie = false;
+                break;
+            }
+        }
+
+        let winner = "-";
+
+        if (!tie) {
+            let maxScore = 0;
+            for (let i = 0; i < players.length; i++) {
+                if (players[i].score > maxScore) {
+                    maxScore = players[i].score;
+                    winner = players[i].username;
+                }
+            }
+        }
+
+        game.winner = winner;
     }
 };
 
