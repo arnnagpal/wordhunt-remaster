@@ -236,6 +236,10 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
 
             const words = player.words as string[];
 
+            if (!player.letters_selected) {
+                return;
+            }
+
             const letters = player.letters_selected as string[];
             const word = letters.join("");
 
