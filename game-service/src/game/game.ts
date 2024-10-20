@@ -42,28 +42,34 @@ export const loadGameHistory = async () => {
     activeGames.splice(0, activeGames.length);
 
     for await (const game of mongoGames) {
-        await fixGame(game.id);
-        if (game.session_type === 1) {
+        let g = game;
+        if (await fixGame(game.id)) {
+            const temp = await mongo.Game.findOne({ _id: game._id }).exec();
+            if (temp) {
+                g = temp;
+            }
+        }
+        if (g.session_type === 1) {
             finishedGames.push({
-                _id: game._id,
-                session_type: game.session_type,
-                players: game.players as LiveGamePlayer[],
-                winner: game.winner,
-                board: game.board,
-                timer: game.timer,
-                created_at: game.created_at,
-                ended_at: game.ended_at,
-                single_player: game.single_player,
+                _id: g._id,
+                session_type: g.session_type,
+                players: g.players as LiveGamePlayer[],
+                winner: g.winner,
+                board: g.board,
+                timer: g.timer,
+                created_at: g.created_at,
+                ended_at: g.ended_at,
+                single_player: g.single_player,
             });
         } else {
             activeGames.push({
-                _id: game._id,
-                session_type: game.session_type,
-                players: game.players as LiveGamePlayer[],
-                board: game.board,
-                timer: game.timer,
-                created_at: game.created_at,
-                single_player: game.single_player,
+                _id: g._id,
+                session_type: g.session_type,
+                players: g.players as LiveGamePlayer[],
+                board: g.board,
+                timer: g.timer,
+                created_at: g.created_at,
+                single_player: g.single_player,
             });
         }
     }
@@ -148,6 +154,8 @@ export const fixGame = async (gameId: string) => {
             }
         );
     }
+
+    return fixed;
 };
 
 export const saveGame = async (game: Game | ActiveGame) => {
