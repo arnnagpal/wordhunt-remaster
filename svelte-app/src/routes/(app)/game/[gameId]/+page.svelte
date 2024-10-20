@@ -164,7 +164,7 @@
 	});
 
 	beforeNavigate(async (navigation) => {
-		if (!navigation.willUnload) {
+		if (!navigation.willUnload || !socket) {
 			return;
 		}
 		socket.endGame();
@@ -173,7 +173,7 @@
 	});
 
 	afterNavigate(async (navigation) => {
-		if (!navigation.willUnload) {
+		if (!navigation.willUnload || !socket) {
 			return;
 		}
 		socket.endGame();

@@ -22,6 +22,8 @@ export interface Rooms {
 export const connectedUsers: { [key: string]: any } = {};
 export const rooms: Rooms = {};
 
+const pingIntervals: { [key: string]: any } = {};
+
 export function createWebSocket(
     server: Elysia,
     secret: ArrayBuffer | TypedArray,
@@ -104,6 +106,16 @@ export function createWebSocket(
         async open(ws) {
             const userData = ws.data.store as WebSocketUser;
             connectedUsers[userData.id] = ws;
+
+            pingIntervals[userData.id] = setInterval(() => {
+                ws.send(
+                    JSON.stringify({
+                        action: "PING",
+                    })
+                );
+
+                console.log("Keep-alive ping sent to", userData.username);
+            }, 50000);
         },
         async message(ws: any, message: any) {
             const data = message;
@@ -121,6 +133,10 @@ export function createWebSocket(
 
             // remove from connected users
             delete connectedUsers[userData.id];
+
+            // remove ping interval
+            clearInterval(pingIntervals[userData.id]);
+            delete pingIntervals[userData.id];
 
             console.log(
                 `User ${userData.username} disconnected; Code: ${code}; Reason: "${reason}"`
