@@ -1,18 +1,9 @@
 import type { Handle } from '@sveltejs/kit';
 import { lucia, redisClient } from '$lib/server/auth';
-import { loadDictionary } from 'wordhunt-utils/src/dictionary/letters';
-import { dictionary } from 'wordhunt-utils/src/dictionary/dictionary';
-import { building } from '$app/environment';
 
 console.log('hooks.server - starting sveltekit server');
 
 console.log(`Redis ping: ${await redisClient.ping()}`);
-
-if (!building) {
-	await loadDictionary();
-}
-
-export const serializedDictionary = dictionary.toJSON();
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const sessionId = event.cookies.get(lucia.sessionCookieName);

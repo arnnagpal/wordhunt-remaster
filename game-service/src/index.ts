@@ -74,8 +74,6 @@ server.get(process.env.ORIGIN_PREFIX + "/game/:id/status", async (req: any) => {
     const publicGame = JSON.parse(JSON.stringify(game));
 
     publicGame.board = JSON.parse(publicGame.board);
-    delete publicGame.board.possible_solutions;
-    delete publicGame.board.total_possible_score;
 
     for (const player of publicGame.players) {
         delete player.game_id;
