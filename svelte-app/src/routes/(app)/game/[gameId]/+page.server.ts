@@ -52,7 +52,7 @@ export const load: PageServerLoad = async (event: any) => {
 	};
 
 	return {
-		dictionary: JSON.stringify(dictionary),
+		dictionary: dictionary.toJSON(),
 		game_id: params.gameId,
 		game,
 		auth_session: event.locals.session,

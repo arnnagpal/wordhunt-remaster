@@ -116,6 +116,43 @@ export class Trie {
         if (isTerminal) return current.isTerminal;
         return true;
     }
+
+    toJSON() {
+        const serialize = (node: TrieNode): any => {
+            const children: { [key: string]: any } = {};
+            for (const [letter, childNode] of Object.entries(node.children)) {
+                children[letter] = serialize(childNode);
+            }
+            return {
+                letter: node.letter,
+                isTerminal: node.isTerminal,
+                children: children,
+            };
+        };
+
+        return JSON.stringify(serialize(this.root));
+    }
+
+    static fromJSON(data: string) {
+        const deserialize = (
+            nodeData: any,
+            parent: TrieNode | null
+        ): TrieNode => {
+            const node = new TrieNode(parent, nodeData.letter);
+            node.isTerminal = nodeData.isTerminal;
+            for (const [letter, childData] of Object.entries(
+                nodeData.children
+            )) {
+                node.setChild(letter, deserialize(childData, node));
+            }
+            return node;
+        };
+
+        const rootData = JSON.parse(data);
+        const trie = new Trie();
+        trie.root = deserialize(rootData, null);
+        return trie;
+    }
 }
 
 export const dictionary = new Trie();

@@ -9,7 +9,7 @@
 	import { Board, type GamePlayer, type UpdateType } from 'wordhunt-utils';
 	import { SocketClient } from '$lib/socket';
 	import GameOver from '$lib/GameOver.svelte';
-	import type { Trie } from 'wordhunt-utils/src/dictionary/dictionary';
+	import { Trie } from 'wordhunt-utils/src/dictionary/dictionary';
 
 	export let data: PageData;
 
@@ -151,7 +151,7 @@
 			throw new Error('No dictionary provided');
 		}
 
-		dictionary = JSON.parse(data.dictionary) as Trie;
+		dictionary = Trie.fromJSON(data.dictionary);
 
 		socket.onMessage(onSocketMessage);
 
