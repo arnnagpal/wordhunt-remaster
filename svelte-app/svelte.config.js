@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-node';
+import adapter from 'svelte-adapter-bun';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -11,10 +11,15 @@ const config = {
 		handler(warning);
 	},
 	kit: {
-		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.
-		// If your environment is not supported or you settled on a specific environment, switch out the adapter.
-		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
-		adapter: adapter(),
+		adapter: adapter({
+			precompress: {
+				brotli: true,
+				gzip: true,
+				files: ['htm', 'html']
+			},
+			dynamic_origin: true,
+			xff_depth: 1
+		}),
 		alias: {
 			ambient: './src/ambient.d.ts'
 		}
