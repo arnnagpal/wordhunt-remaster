@@ -263,6 +263,8 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
             const result = dictionary.hasSubString(wordToCheck, true);
 
             if (result) {
+                console.log(words);
+                console.log(player);
                 words.push(word.toUpperCase());
                 player.score += getPoints(word);
 
