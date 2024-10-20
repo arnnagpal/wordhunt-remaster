@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import { createClient } from "redis";
 import { Repository, type Entity } from "redis-om";
 import { sessionSchema, type RedisSession } from "../redis/schema/session";

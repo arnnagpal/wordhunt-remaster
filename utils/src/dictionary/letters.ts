@@ -1,9 +1,15 @@
+import { readFile } from "fs/promises";
 import { dictionary, letterFrequency } from "./dictionary";
 
 export async function loadDictionary() {
-    const dictionaryFile = Bun.file("dictionary/csw21.json");
+    const dictionaryFile = await readFile(
+        __dirname + "../../dictionary/csw21.json",
+        {
+            encoding: "utf8",
+        }
+    );
 
-    const text = await dictionaryFile.json(); // json array
+    const text = JSON.parse(dictionaryFile); // json array
 
     text.forEach((word: string) => {
         dictionary.addWord(word);
@@ -14,8 +20,13 @@ export async function loadDictionary() {
     console.log("loaded dictionary length: ", dictionary.length);
 
     console.log("loading letter frequency file");
-    const letterFrequencyFile = Bun.file("dictionary/letter_distribution.json");
-    const letterFrequencyJson = await letterFrequencyFile.json();
+    const letterFrequencyFile = await readFile(
+        "../../dictionary/letter_distribution.json",
+        {
+            encoding: "utf8",
+        }
+    );
+    const letterFrequencyJson = JSON.parse(letterFrequencyFile);
 
     Object.keys(letterFrequencyJson).forEach((key) => {
         letterFrequency[key] = letterFrequencyJson[key];

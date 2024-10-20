@@ -8,7 +8,7 @@ import {
     loadGameHistory,
     saveGameHistory,
 } from "./game/game";
-import { loadDictionary } from "./game/letters";
+import { loadDictionary } from "wordhunt-utils/src/dictionary/letters";
 import { setupMatchmaking } from "./game/matchmaking";
 
 dotenv.config();

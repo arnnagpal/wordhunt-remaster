@@ -8,7 +8,7 @@ import {
 import { connectedUsers, WebSocketUser } from "../socket";
 import { LiveGamePlayer } from "wordhunt-utils/src/types/game-player";
 import { generateIdFromEntropySize } from "lucia";
-import { createBoard } from "../game/board";
+import { createBoard } from "wordhunt-utils/src/dictionary/board";
 import Elysia from "elysia";
 import { find_match, remove_from_queue } from "../game/matchmaking";
 

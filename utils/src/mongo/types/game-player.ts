@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import mongoose from "mongoose";
 
 export class MongoGamePlayer extends mongoose.SchemaType {
@@ -9,7 +10,7 @@ export class MongoGamePlayer extends mongoose.SchemaType {
         super(key, options, "GamePlayer");
     }
 
-    cast(val: any) {
+    override cast(val: any) {
         if (val == null) return {};
         if (typeof val !== "object") {
             throw new Error("GamePlayer: val is not an object");

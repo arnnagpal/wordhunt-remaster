@@ -47,7 +47,6 @@
     "oslo": "^1.2.1",
     "redis": "^4.7.0",
     "redis-om": "^0.4.6",
-    "svelte-adapter-bun": "^0.5.2",
     "sveltekit-superforms": "^2.19.1",
     "tailwind-extended-shadows": "^0.4.0",
     "tailwind-merge": "^2.5.3",

@@ -10,7 +10,7 @@ export interface User {
     rating: number;
     rating_deviation: number;
     rating_volatility: number;
-    
+
     games: string[];
     role: UserRole;
 }

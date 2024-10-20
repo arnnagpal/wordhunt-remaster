@@ -6,17 +6,15 @@ import type { GamePlayer } from "./types/game-player";
 import { Board, type BoardSolution, type Position } from "./types/board";
 import type { UpdateType } from "./types/update-type";
 
-export {
+export { UserRole, Board, GamePreset, SessionType };
+
+export type {
     User,
-    UserRole,
     Session,
     ActiveGame,
     Game,
     GamePlayer,
-    Board,
     BoardSolution,
     Position,
     UpdateType,
-    GamePreset,
-    SessionType,
 };

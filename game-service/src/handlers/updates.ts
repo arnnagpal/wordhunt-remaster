@@ -5,7 +5,7 @@ import {
     GamePlayer,
     LiveGamePlayer,
 } from "wordhunt-utils/src/types/game-player";
-import { dictionary } from "../game/dictionary";
+import { dictionary } from "wordhunt-utils/src/dictionary/dictionary";
 import { getPoints } from "wordhunt-utils/src/utils";
 import Elysia from "elysia";
 

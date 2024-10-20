@@ -3,7 +3,7 @@ import type { LayoutLoad } from './$types';
 
 export const ssr = false;
 
-export const load: LayoutLoad = async (req) => {
+export const load: LayoutLoad = (req) => {
 	const { url } = req;
 	const { pathname } = url;
 

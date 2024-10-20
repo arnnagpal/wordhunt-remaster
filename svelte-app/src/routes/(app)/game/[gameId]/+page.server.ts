@@ -1,8 +1,10 @@
+// deno-lint-ignore-file no-explicit-any
 import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { SessionType, type Game } from 'wordhunt-utils';
+import process from 'node:process';
 
-export const load: PageServerLoad = async (event) => {
+export const load: PageServerLoad = async (event: any) => {
 	const user = event.locals.user;
 	const params = event.params;
 

@@ -13,3 +13,6 @@
 */vite.config.ts.timestamp-*
 */.idea/
 .vscode/
+
+*/deno.lock
+deno.lock

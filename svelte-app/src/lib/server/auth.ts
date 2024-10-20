@@ -5,6 +5,7 @@ import { createJWT } from 'oslo/jwt';
 import { TimeSpan } from 'oslo';
 import { type User, type Session } from '../authTypes';
 import { configDotenv } from 'dotenv';
+import process from "node:process";
 
 configDotenv();
 

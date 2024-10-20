@@ -1,11 +1,10 @@
-import { Board, BoardSolution } from "wordhunt-utils";
-import { getPoints } from "wordhunt-utils/src/utils";
+import { Board, BoardSolution, type Position } from "../types/board";
+import { getPoints } from "../utils";
 import { letterFrequency, dictionary } from "./dictionary";
-import { type Position } from "wordhunt-utils";
 
 const minimumPossibleScore = 100000;
 
-export const createBoard = async (size: number) => {
+export const createBoard = (size: number) => {
     console.time("createValidBoard");
 
     console.time("generateBoard");
