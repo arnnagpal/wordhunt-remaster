@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-node';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -7,8 +7,8 @@ const config = {
 	// for more information about preprocessors
 	preprocess: vitePreprocess(),
 	onwarn: (warning, handler) => {
-		if (warning.code.startsWith("a11y-")) return
-		handler(warning)
+		if (warning.code.startsWith('a11y-')) return;
+		handler(warning);
 	},
 	kit: {
 		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.
@@ -16,7 +16,7 @@ const config = {
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
 		adapter: adapter(),
 		alias: {
-			'ambient': './src/ambient.d.ts',
+			ambient: './src/ambient.d.ts'
 		}
 	}
 };

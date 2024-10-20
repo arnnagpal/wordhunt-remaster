@@ -36,6 +36,7 @@
   "type": "module",
   "dependencies": {
     "@node-rs/argon2": "^1.8.3",
+    "@sveltejs/adapter-node": "^5.2.8",
     "bits-ui": "^0.21.16",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
