@@ -88,7 +88,7 @@ export const fixGame = async (gameId: string) => {
     }
 
     // now check for corrupt parameters: no winner property, and no username properties on all the players
-
+    let fixed = false;
     // checking players first
     let players = game.players as LiveGamePlayer[];
     for (let i = 0; i < players.length; i++) {
@@ -103,6 +103,8 @@ export const fixGame = async (gameId: string) => {
             const user = await mongo.User.findOne({ _id: player.id }).exec();
             if (user) {
                 player.username = user.username;
+
+                fixed = true;
             }
         }
     }
@@ -133,6 +135,18 @@ export const fixGame = async (gameId: string) => {
         }
 
         game.winner = winner;
+        fixed = true;
+    }
+
+    if (fixed) {
+        console.log("Fixed game", gameId);
+        await mongo.Game.updateOne(
+            { _id: gameId },
+            {
+                players: players,
+                winner: game.winner,
+            }
+        );
     }
 };
 
