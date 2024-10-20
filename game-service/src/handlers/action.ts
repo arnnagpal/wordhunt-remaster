@@ -107,13 +107,22 @@ export async function createNewGame(data: any) {
     const playerIds = gameData.players as string[];
 
     let users = [];
-    for (let i in playerIds) {
+    for (let i = 0; i < playerIds.length; i++) {
         const userData = connectedUsers[playerIds[i]];
+        if (!userData) {
+            console.log("User not found", playerIds[i]);
+            return;
+        }
         users.push(userData);
     }
 
-    for (let i in playerIds) {
-        const userData = connectedUsers[playerIds[i]].data.store;
+    for (let i = 0; i < playerIds.length; i++) {
+        const userData = connectedUsers[playerIds[i]];
+        if (!userData) {
+            console.log("User not found", playerIds[i]);
+            return;
+        }
+
         players.push({
             id: playerIds[i],
             username: userData.username,
@@ -141,6 +150,11 @@ export async function createNewGame(data: any) {
 
     for (let i = 0; i < users.length; i++) {
         const ws = users[i] as any;
+
+        if (!ws) {
+            console.log("Websocket not found");
+            continue;
+        }
 
         console.log("Pushing game", game._id, "to", ws.data.store.username);
 

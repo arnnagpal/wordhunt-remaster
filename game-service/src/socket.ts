@@ -4,6 +4,7 @@ import { validateJWT } from "oslo/jwt";
 import { MongoClient, RedisClient } from "wordhunt-utils/src/server";
 import { handleAction } from "./handlers/action";
 import { handleUpdates } from "./handlers/updates";
+import { remove_from_queue } from "./game/matchmaking";
 
 export interface WebSocketUser {
     session_token: string;
@@ -91,6 +92,8 @@ export function createWebSocket(
                 console.log(
                     `User ${user.username} connected from another device`
                 );
+            } else {
+                console.log(`User ${user.username} connected`);
             }
 
             req.store = {
@@ -130,6 +133,9 @@ export function createWebSocket(
         },
         close(ws: any, code: any, reason: any) {
             const userData = ws.data.store as WebSocketUser;
+
+            // remove from queue
+            remove_from_queue(userData);
 
             // remove from connected users
             delete connectedUsers[userData.id];
