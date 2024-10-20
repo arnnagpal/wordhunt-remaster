@@ -151,7 +151,7 @@
 			throw new Error('No dictionary provided');
 		}
 
-		dictionary = data.dictionary;
+		dictionary = JSON.parse(data.dictionary) as Trie;
 
 		socket.onMessage(onSocketMessage);
 
