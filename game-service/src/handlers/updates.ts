@@ -199,25 +199,6 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
             lettersSelected.splice(index, 0, letter);
 
             player.letters_selected = lettersSelected;
-
-            // check if the word is valid
-            const word = lettersSelected.join("");
-            const wordToCheck = word.toUpperCase();
-
-            let result = dictionary.hasSubString(wordToCheck, true);
-            if (wordToCheck.length < 3) {
-                result = false;
-            }
-
-            server.server?.publish(
-                room,
-                JSON.stringify({
-                    updateType: "LETTER_SELECT",
-                    data: {
-                        validWord: result,
-                    },
-                })
-            );
             break;
         }
 

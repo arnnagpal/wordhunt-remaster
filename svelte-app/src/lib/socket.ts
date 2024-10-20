@@ -11,7 +11,7 @@ export class SocketClient {
 	setupSocket(reconnectInterval?: NodeJS.Timeout): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			console.log('Setting up socket');
-			this.client = new WebSocket('wss://wordhunt.arnagpal.dev/api/ws', this.jwt);
+			this.client = new WebSocket('ws://localhost:3000/api/ws', this.jwt);
 
 			// message is received
 			this.client.addEventListener('message', (event) => {
@@ -138,16 +138,16 @@ export class SocketClient {
 
 	selectLetter(letter: string, index: number, row: number, col: number): Promise<boolean> {
 		return new Promise<boolean>((resolve, _reject) => {
-			const listenerIdx = this.onMessage((data: object) => {
-				const message = JSON.parse((data as CustomEvent).detail.message);
-				if (message.updateType === 'LETTER_SELECT') {
-					// console.log('Received response from server', message);
-					resolve(!!message.data.validWord);
+			// const listenerIdx = this.onMessage((data: object) => {
+			// 	const message = JSON.parse((data as CustomEvent).detail.message);
+			// 	if (message.updateType === 'LETTER_SELECT') {
+			// 		console.log('Received response from server', message);
+			// 		resolve(!!message.data.validWord);
 
-					// remove listener
-					this.removeListenerByIdx('message', listenerIdx);
-				}
-			});
+			// 		// remove listener
+			// 		this.removeListenerByIdx('message', listenerIdx);
+			// 	}
+			// });
 
 			// request to select letter
 			this.sendMessage(

@@ -3,9 +3,11 @@
 	import Line from '$lib/Line.svelte';
 
 	import { type ScoreEvent, WordSelectionState, type SelectionEvent } from 'ambient';
-	import type { Board, UpdateType } from 'wordhunt-utils';
+	import type { Board } from 'wordhunt-utils';
 	import { getPoints } from 'wordhunt-utils/src/utils';
+	import { loadDictionary } from 'wordhunt-utils/src/dictionary/letters';
 	import type { SocketClient } from './socket';
+	import { dictionary } from 'wordhunt-utils/src/dictionary/dictionary';
 
 	export let board: Board;
 
@@ -40,7 +42,8 @@
 
 	const dispatch = createEventDispatcher();
 
-	onMount(() => {
+	onMount(async () => {
+		await loadDictionary();
 		// generate board
 		for (let i = 0; i < rows * columns; i++) {
 			let doc = document.getElementById('letter-' + i);
@@ -149,8 +152,9 @@
 		const word = selected
 			.map((value) => grid[Math.floor(value / columns)][value % columns])
 			.join('');
+		socket.selectLetter(grid[r][c], selected.length - 1, r, c);
 
-		const valid = await socket.selectLetter(grid[r][c], selected.length - 1, r, c);
+		const valid = dictionary.hasSubString(word, true);
 		if (valid) {
 			console.log('Valid word: ' + word);
 
