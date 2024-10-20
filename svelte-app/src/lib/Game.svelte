@@ -1,13 +1,12 @@
 <script lang="ts">
+	import { Trie } from 'wordhunt-utils/src/dictionary/dictionary';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import Line from '$lib/Line.svelte';
 
 	import { type ScoreEvent, WordSelectionState, type SelectionEvent } from 'ambient';
 	import type { Board } from 'wordhunt-utils';
 	import { getPoints } from 'wordhunt-utils/src/utils';
-	import { loadDictionary } from 'wordhunt-utils/src/dictionary/letters';
 	import type { SocketClient } from './socket';
-	import { dictionary } from 'wordhunt-utils/src/dictionary/dictionary';
 
 	export let board: Board;
 
@@ -36,6 +35,8 @@
 	export let disabled = false;
 	export let socket: SocketClient;
 
+	export let dictionary: Trie;
+
 	let lines: Line[] = [];
 
 	let isDrag = false;
@@ -43,7 +44,6 @@
 	const dispatch = createEventDispatcher();
 
 	onMount(async () => {
-		await loadDictionary();
 		// generate board
 		for (let i = 0; i < rows * columns; i++) {
 			let doc = document.getElementById('letter-' + i);

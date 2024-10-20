@@ -1,8 +1,9 @@
-// deno-lint-ignore-file no-explicit-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { SessionType, type Game } from 'wordhunt-utils';
 import process from 'node:process';
+import { dictionary } from 'wordhunt-utils/src/dictionary/dictionary';
 
 export const load: PageServerLoad = async (event: any) => {
 	const user = event.locals.user;
@@ -51,6 +52,7 @@ export const load: PageServerLoad = async (event: any) => {
 	};
 
 	return {
+		dictionary,
 		game_id: params.gameId,
 		game,
 		auth_session: event.locals.session,

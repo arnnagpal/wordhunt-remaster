@@ -9,6 +9,7 @@
 	import { Board, type GamePlayer, type UpdateType } from 'wordhunt-utils';
 	import { SocketClient } from '$lib/socket';
 	import GameOver from '$lib/GameOver.svelte';
+	import type { Trie } from 'wordhunt-utils/src/dictionary/dictionary';
 
 	export let data: PageData;
 
@@ -36,6 +37,7 @@
 	let gameWinner = '';
 	let waitingOn: string[] = [];
 	let finishedPlayers: GamePlayer[] = [];
+	let dictionary: Trie;
 	$: {
 		if (data.game?.board && !board) {
 			board = JSON.parse(<string>data.game.board) as Board;
@@ -145,6 +147,12 @@
 			throw new Error('No game id provided');
 		}
 
+		if (!data.dictionary) {
+			throw new Error('No dictionary provided');
+		}
+
+		dictionary = data.dictionary;
+
 		socket.onMessage(onSocketMessage);
 
 		await socket.setupSocket();
@@ -213,6 +221,7 @@
 	<div class="flex flex-col items-center h-[85vh]">
 		<div>
 			<Game
+				bind:dictionary
 				bind:socket
 				bind:disabled={gameDisabled}
 				bind:wordBank={word_bank}
