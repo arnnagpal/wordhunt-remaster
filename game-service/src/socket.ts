@@ -28,7 +28,7 @@ export function createWebSocket(
     redis: RedisClient,
     mongo: MongoClient
 ) {
-    server.ws("/ws", {
+    server.ws(process.env.ORIGIN_PREFIX + "/ws", {
         async beforeHandle(req) {
             if (!req.headers) {
                 return new Response("Unauthorized (invalid jwt)", {

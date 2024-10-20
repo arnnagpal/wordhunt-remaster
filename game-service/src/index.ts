@@ -49,14 +49,10 @@ setupMatchmaking();
 const server = new Elysia({
     serve: {
         hostname: process.env.HOSTNAME,
-        tls: {
-            cert: Bun.file(process.env.CERT_PATH || ""),
-            key: Bun.file(process.env.KEY_PATH || ""),
-        },
     },
 });
 
-server.get("/game/:id/status", async (req: any) => {
+server.get(process.env.ORIGIN_PREFIX + "/game/:id/status", async (req: any) => {
     const gameID = req.params.id;
 
     const game = getGame(gameID);
@@ -91,10 +87,6 @@ server.get("/game/:id/status", async (req: any) => {
             "Content-Type": "application/json",
         },
     });
-});
-
-server.get("/ws", async (req: any) => {
-    console.log(req.headers);
 });
 
 createWebSocket(server, secret, redis, mongo);
