@@ -152,6 +152,8 @@
 		}
 
 		dictionary = Trie.fromJSON(data.dictionary);
+		const gamePlayer = data.game.players.find((player) => player.id === data.auth_user.id);
+		word_bank = gamePlayer?.words ?? [];
 
 		socket.onMessage(onSocketMessage);
 

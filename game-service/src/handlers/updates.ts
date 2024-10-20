@@ -231,6 +231,8 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
                 word.length
             );
 
+            player.letters_selected = [];
+
             if (words.find((w) => w === word)) {
                 // word already used
                 return;
@@ -248,7 +250,6 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
             }
 
             player.words = words;
-            player.letters_selected = [];
             break;
         }
 
