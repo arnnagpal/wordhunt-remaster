@@ -11,7 +11,7 @@ export class SocketClient {
 	setupSocket(reconnectInterval?: NodeJS.Timeout): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			console.log('Setting up socket');
-			this.client = new WebSocket('ws://localhost:3000/api/ws', this.jwt);
+			this.client = new WebSocket('wss://wordhunt.arnagpal.dev/api/ws', this.jwt);
 
 			// message is received
 			this.client.addEventListener('message', (event) => {
