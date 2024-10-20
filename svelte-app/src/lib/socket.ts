@@ -15,7 +15,7 @@ export class SocketClient {
 
 			// message is received
 			this.client.addEventListener('message', (event) => {
-				// console.log('Received message', event.data);
+				console.log('Received message', event.data);
 				const data = {
 					detail: {
 						message: event.data
