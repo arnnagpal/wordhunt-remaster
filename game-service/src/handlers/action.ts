@@ -112,7 +112,6 @@ export async function createNewGame(data: any) {
 
         const userData = connectedUsers[playerIds[i]];
 
-        console.log(userData);
         if (!userData) {
             console.log("User not found", playerIds[i]);
             return;
@@ -122,11 +121,13 @@ export async function createNewGame(data: any) {
     }
 
     for (let i = 0; i < users.length; i++) {
-        const userData = users[i];
-        if (!userData) {
+        const ws = users[i];
+        if (!ws) {
             console.log("User not found");
             return;
         }
+
+        const userData = ws.data.store as WebSocketUser;
 
         console.log("Creating game for", userData.username);
 
