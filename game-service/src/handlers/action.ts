@@ -123,6 +123,8 @@ export async function createNewGame(data: any) {
             return;
         }
 
+        console.log("Creating game for", userData.username);
+
         players.push({
             id: playerIds[i],
             username: userData.username,

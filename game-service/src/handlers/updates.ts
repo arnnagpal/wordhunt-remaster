@@ -55,25 +55,21 @@ async function broadcastWinCondition(
     }
 
     let winner = "";
-    let maxScore = 0;
+    let maxScore = -1;
 
-    // check for tie
-    let tie = false;
     for (const player of game.players) {
-        if (player.score === maxScore) {
-            winner = "-";
+        if (player.score > maxScore) {
             maxScore = player.score;
-            break;
+            winner = player.username;
         }
     }
 
-    if (!tie) {
-        // determine winner
-        for (const player of game.players) {
-            if (player.score > maxScore) {
-                maxScore = player.score;
-                winner = player.username;
-            }
+    // check for tie
+    for (const player of game.players) {
+        if (player.username !== winner && player.score === maxScore) {
+            winner = "-";
+            maxScore = player.score;
+            break;
         }
     }
 
@@ -86,12 +82,14 @@ async function broadcastWinCondition(
                 data: {
                     status: "GAME_OVER",
                     winner: winner,
-                    players: game.players.map((p) => ({
-                        username: p.username,
-                        id: p.id,
-                        score: p.score,
-                        words: p.words,
-                    })),
+                    players: JSON.parse(JSON.stringify(game.players)).map(
+                        (p: LiveGamePlayer) => ({
+                            username: p.username,
+                            id: p.id,
+                            score: p.score,
+                            words: p.words,
+                        })
+                    ),
                 },
             })
         );

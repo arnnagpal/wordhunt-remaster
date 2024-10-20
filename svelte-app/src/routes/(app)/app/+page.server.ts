@@ -17,6 +17,10 @@ export const load: PageServerLoad = async (event) => {
 		redirect(302, '/login');
 	}
 
+	if (process.env.AVAILABILITY === 'admin' && user.username !== 'aryan') {
+		return redirect(302, '/login');
+	}
+
 	return {
 		form: await superValidate(zod(z.object({}))),
 		user: user as User,
