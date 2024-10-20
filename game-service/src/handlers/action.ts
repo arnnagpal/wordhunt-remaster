@@ -116,17 +116,17 @@ export async function createNewGame(data: any) {
         users.push(userData);
     }
 
-    for (let i = 0; i < playerIds.length; i++) {
-        const userData = connectedUsers[playerIds[i]];
+    for (let i = 0; i < users.length; i++) {
+        const userData = users[i];
         if (!userData) {
-            console.log("User not found", playerIds[i]);
+            console.log("User not found");
             return;
         }
 
         console.log("Creating game for", userData.username);
 
         players.push({
-            id: playerIds[i],
+            id: userData.id,
             username: userData.username,
             words: [],
             score: 0,
@@ -138,7 +138,7 @@ export async function createNewGame(data: any) {
     }
 
     const singlePlayer = players.length === 1 || time === -1;
-    const board = await createBoard(4);
+    const board = createBoard(4);
 
     const game = createGame({
         _id: id,
