@@ -56,7 +56,7 @@ export const load: PageServerLoad = async (event: any) => {
 	const game = {
 		id: gameObj._id,
 		players: gameObj.players,
-		board,
+		board: JSON.stringify(board),
 		timer: gameObj.timer,
 		created_at: gameObj.created_at,
 		ended_at: gameObj.ended_at,
