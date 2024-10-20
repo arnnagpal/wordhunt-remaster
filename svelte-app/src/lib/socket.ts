@@ -1,5 +1,3 @@
-import { setInterval, Timeout } from 'node:timers';
-
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export class SocketClient {
 	public client!: WebSocket;
@@ -10,7 +8,7 @@ export class SocketClient {
 		this.jwt = jwt;
 	}
 
-	setupSocket(reconnectInterval?: Timeout): Promise<void> {
+	setupSocket(reconnectInterval?: NodeJS.Timeout): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			console.log('Setting up socket');
 			this.client = new WebSocket('wss://wordhunt.arnagpal.dev/api/ws', this.jwt);
