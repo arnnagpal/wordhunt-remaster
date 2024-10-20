@@ -139,7 +139,7 @@
 		return Math.abs(r - lastR) <= 1 && Math.abs(c - lastC) <= 1;
 	}
 
-	async function toggle(r: number, c: number) {
+	function toggle(r: number, c: number) {
 		let grid = board.board;
 		state[r * columns + c] = !state[r * columns + c];
 
@@ -156,8 +156,6 @@
 
 		const valid = dictionary.hasSubString(word, true);
 		if (valid) {
-			console.log('Valid word: ' + word);
-
 			selectionStatus = wordBank.includes(word)
 				? WordSelectionState.OldWord
 				: WordSelectionState.NewWord;
