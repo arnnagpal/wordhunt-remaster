@@ -46,7 +46,15 @@ loadGameHistory();
 
 setupMatchmaking();
 
-const server = new Elysia();
+const server = new Elysia({
+    serve: {
+        hostname: process.env.HOSTNAME,
+        tls: {
+            cert: Bun.file(process.env.CERT_PATH || ""),
+            key: Bun.file(process.env.KEY_PATH || ""),
+        },
+    },
+});
 
 server.get("/game/:id/status", async (req: any) => {
     const gameID = req.params.id;
@@ -85,6 +93,10 @@ server.get("/game/:id/status", async (req: any) => {
     });
 });
 
+server.get("/ws", async (req: any) => {
+    console.log(req.headers);
+});
+
 createWebSocket(server, secret, redis, mongo);
 
 process.on("SIGINT", async () => {
@@ -97,6 +109,6 @@ process.on("exit", async () => {
     saveGameHistory();
 });
 
-server.listen(3000, (s) => {
+server.listen(Number.parseInt(process.env.PORT || "3000"), (s) => {
     console.log(`Listening on ${s.hostname}:${s.port}`);
 });

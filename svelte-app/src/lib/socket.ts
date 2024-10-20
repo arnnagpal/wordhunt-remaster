@@ -11,7 +11,7 @@ export class SocketClient {
 	async setupSocket(reconnectInterval?: NodeJS.Timeout): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			console.log('Setting up socket');
-			this.client = new WebSocket('ws://localhost:3000/ws', this.jwt);
+			this.client = new WebSocket('ws://' + process.env.GAME_SERVICE_URL + '/ws', this.jwt);
 
 			// message is received
 			this.client.addEventListener('message', (event) => {
