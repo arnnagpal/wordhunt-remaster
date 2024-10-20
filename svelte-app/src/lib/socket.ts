@@ -214,7 +214,7 @@ export class SocketClient {
 	}
 
 	sendMessage(message: string) {
-		// console.log('Sending message', message);
+		console.log('Sending message', message);
 		this.client.send(message);
 	}
 
