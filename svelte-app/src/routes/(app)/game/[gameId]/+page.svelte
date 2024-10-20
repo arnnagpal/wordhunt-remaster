@@ -160,7 +160,6 @@
 		await socket.setupSocket();
 
 		socket.joinGame(data.game_id);
-		socket.startTimer();
 	});
 
 	beforeNavigate(async (navigation) => {

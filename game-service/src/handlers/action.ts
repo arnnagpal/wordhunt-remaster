@@ -3,6 +3,7 @@ import {
     createGame,
     getActiveGame,
     getRoomName,
+    saveGame,
     socketToGame,
 } from "../game/game";
 import { connectedUsers, WebSocketUser } from "../socket";
@@ -11,6 +12,7 @@ import { generateIdFromEntropySize } from "lucia";
 import { createBoard } from "wordhunt-utils/src/dictionary/board";
 import Elysia from "elysia";
 import { find_match, remove_from_queue } from "../game/matchmaking";
+import { broadcastWinCondition, timerMap } from "./updates";
 
 export async function handleAction(server: Elysia, ws: any, message: any) {
     const userData = ws.data.store as WebSocketUser;
@@ -39,11 +41,13 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
                     (player) => player.id === userData.id
                 ) as LiveGamePlayer;
 
+                const playerIdx = game.players.findIndex(
+                    (player) => player.id === userData.id
+                );
+
                 socketToGame.set(player.id, {
                     room: roomName,
-                    playerIdx: game.players.findIndex(
-                        (player) => player.id === userData.id
-                    ),
+                    playerIdx,
                     game: game,
                 });
 
@@ -56,6 +60,53 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
                             time_left: player.time_left,
                         },
                     })
+                );
+
+                if (timerMap.has(playerIdx)) {
+                    // timer already started
+                    return;
+                }
+
+                if (player.time_left == -1) {
+                    // infinite time
+                    return;
+                }
+
+                timerMap.set(
+                    playerIdx,
+                    setInterval(() => {
+                        if (
+                            player.time_left <= 0 ||
+                            player.time_left % 5 === 0
+                        ) {
+                            game.players[playerIdx] = player;
+                            saveGame(game);
+                        }
+                        if (player.time_left <= 0) {
+                            clearInterval(timerMap.get(playerIdx));
+                            timerMap.delete(playerIdx);
+
+                            broadcastWinCondition(
+                                game,
+                                server,
+                                player,
+                                userData
+                            );
+
+                            return;
+                        }
+
+                        player.time_left -= 1;
+                        server.server?.publish(
+                            roomName,
+                            JSON.stringify({
+                                updateType: "UPDATE_TIME",
+                                data: {
+                                    time_left: player.time_left,
+                                },
+                            })
+                        );
+                    }, 1000)
                 );
 
                 break;

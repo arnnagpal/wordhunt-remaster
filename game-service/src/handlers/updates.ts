@@ -9,9 +9,9 @@ import { dictionary } from "wordhunt-utils/src/dictionary/dictionary";
 import { getPoints } from "wordhunt-utils/src/utils";
 import Elysia from "elysia";
 
-const timerMap = new Map<number, Timer>();
+export const timerMap = new Map<number, Timer>();
 
-async function broadcastWinCondition(
+export async function broadcastWinCondition(
     game: ActiveGame,
     server: Elysia,
     userPlayer: LiveGamePlayer,
@@ -108,55 +108,6 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
     const updateType = data.updateType as UpdateType;
     switch (updateType) {
         case "START_TIME": {
-            const data = socketToGame.get((ws.data.store as WebSocketUser).id);
-            if (!data) {
-                return;
-            }
-            const { room, game, playerIdx } = data;
-            const player = game.players[playerIdx] as LiveGamePlayer;
-
-            if (!player) {
-                return;
-            }
-
-            if (timerMap.has(playerIdx)) {
-                // timer already started
-                return;
-            }
-
-            if (player.time_left == -1) {
-                // infinite time
-                return;
-            }
-
-            timerMap.set(
-                playerIdx,
-                setInterval(() => {
-                    if (player.time_left <= 0 || player.time_left % 5 === 0) {
-                        game.players[playerIdx] = player;
-                        saveGame(game);
-                    }
-                    if (player.time_left <= 0) {
-                        clearInterval(timerMap.get(playerIdx));
-                        timerMap.delete(playerIdx);
-
-                        broadcastWinCondition(game, server, player, userData);
-
-                        return;
-                    }
-
-                    player.time_left -= 1;
-                    server.server?.publish(
-                        room,
-                        JSON.stringify({
-                            updateType: "UPDATE_TIME",
-                            data: {
-                                time_left: player.time_left,
-                            },
-                        })
-                    );
-                }, 1000)
-            );
             break;
         }
         case "LETTER_SELECT": {
