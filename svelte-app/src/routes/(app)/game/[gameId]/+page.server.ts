@@ -46,9 +46,9 @@ export const load: PageServerLoad = async (event: any) => {
 	delete board.possible_solutions;
 	delete board.total_possible_score;
 
-	const boardDictionary = board_copy
-		.get_possible_solutions()
-		.map((solution: BoardSolution) => solution.word);
+	const boardDictionary = board_copy.possible_solutions.map(
+		(solution: BoardSolution) => solution.word
+	);
 
 	// convert to trie
 	const trie = new Trie(boardDictionary);
