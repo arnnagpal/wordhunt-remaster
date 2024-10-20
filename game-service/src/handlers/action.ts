@@ -108,11 +108,16 @@ export async function createNewGame(data: any) {
 
     let users = [];
     for (let i = 0; i < playerIds.length; i++) {
+        console.log("Finding user", playerIds[i]);
+
         const userData = connectedUsers[playerIds[i]];
+
+        console.log(userData);
         if (!userData) {
             console.log("User not found", playerIds[i]);
             return;
         }
+
         users.push(userData);
     }
 
