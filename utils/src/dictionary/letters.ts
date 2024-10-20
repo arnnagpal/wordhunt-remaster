@@ -2,12 +2,9 @@ import { readFile } from "fs/promises";
 import { dictionary, letterFrequency } from "./dictionary";
 
 export async function loadDictionary() {
-    const dictionaryFile = await readFile(
-        __dirname + "/../../dictionary/csw21.json",
-        {
-            encoding: "utf8",
-        }
-    );
+    const dictionaryFile = await readFile("/../../dictionary/csw21.json", {
+        encoding: "utf8",
+    });
 
     const text = JSON.parse(dictionaryFile); // json array
 
@@ -21,7 +18,7 @@ export async function loadDictionary() {
 
     console.log("loading letter frequency file");
     const letterFrequencyFile = await readFile(
-        "/../../dictionary/letter_distribution.json",
+        __dirname + "/../../dictionary/letter_distribution.json",
         {
             encoding: "utf8",
         }
