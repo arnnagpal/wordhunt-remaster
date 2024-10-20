@@ -83,7 +83,7 @@
 	}
 
 	beforeNavigate(() => {
-		socket.disconnect();
+		if (socket.client && readyState) socket.disconnect();
 	});
 </script>
 
