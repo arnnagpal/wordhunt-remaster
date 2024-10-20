@@ -5,30 +5,28 @@
 	import { getPoints } from 'wordhunt-utils/src/utils';
 	import { goto } from '$app/navigation';
 
-	export let open = true;
-	export let winner = 'aryan';
-	export let players: GamePlayer[] = [
-		{
-			username: 'aryan',
-			id: '0',
-			words: ['PISS'],
-			score: 400
-		},
-		{
-			username: 'dummy',
-			id: '1',
-			words: ['POO'],
-			score: 100
-		}
-	];
+	export let open = false;
+	export let winner = '';
+	export let players: GamePlayer[] = [];
 
 	export let waitingOn: string[] = [];
+
+	export let redirect = true;
+
+	let tie = () => winner === '-';
+
+	function getEmoji(username: string) {
+		if (tie()) return '🤷‍♂️';
+		return username === winner ? '👑' : '❤️‍🩹';
+	}
 
 	function openChange(open: boolean) {
 		if (open) return;
 
-		// redirect to dashboard
-		goto('/app');
+		if (redirect) {
+			// redirect to dashboard
+			goto('/app');
+		}
 	}
 </script>
 
@@ -38,7 +36,7 @@
 	closeOnOutsideClick={false}
 	onOpenChange={openChange}
 >
-	<AlertDialog.Content>
+	<AlertDialog.Content class={players.length == 1 ? 'max-w-sm' : ''}>
 		<AlertDialog.Header>
 			<div>
 				<AlertDialog.Title class="text-center text-2xl">GAME OVER</AlertDialog.Title>
@@ -56,7 +54,7 @@
 						<div class="">
 							<div class="flex flex-row gap-2 justify-between">
 								<p
-									class="text-lg font-bold {!winner
+									class="text-lg font-bold {!winner || tie()
 										? 'text-yellow-500'
 										: player.username === winner
 											? 'text-[#8cde78]'
@@ -65,13 +63,13 @@
 									@{player.username}
 								</p>
 								<p class="text-lg font-bold">
-									{!winner ? '' : player.username === winner ? '👑' : '❤️‍🩹'}
+									{getEmoji(player.username)}
 								</p>
 							</div>
 							<!-- display words along with indiv word scores -->
 							<Separator />
 							<div
-								class="flex flex-col gap-2 overflow-y-scroll min-h-72 max-h-72 {waitingOn.includes(
+								class="flex flex-col gap-2 overflow-y-scroll scrollbar-none min-h-72 max-h-72 {waitingOn.includes(
 									player.username
 								)
 									? 'justify-center items-center'

@@ -106,7 +106,6 @@ export function createWebSocket(
             connectedUsers[userData.id] = ws;
         },
         async message(ws: any, message: any) {
-            const userData = ws.data.store as WebSocketUser;
             const data = message;
 
             if (data.action) {

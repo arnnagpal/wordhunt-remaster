@@ -4,6 +4,7 @@ import {
     GamePlayer,
     LiveGamePlayer,
 } from "wordhunt-utils/src/types/game-player";
+import { WebSocketUser } from "../socket";
 
 const finishedGames: Game[] = [];
 const activeGames: ActiveGame[] = [];
@@ -112,6 +113,29 @@ export const saveGame = async (game: Game | ActiveGame) => {
         },
         { upsert: true }
     );
+
+    for (let i = 0; i < game.players.length; i++) {
+        const player = game.players[i];
+        const user = await mongo.User.findOne({ _id: player.id }).exec();
+        if (!user) {
+            continue;
+        }
+
+        const games = user?.games;
+
+        if (games.find((g) => g === game._id)) {
+            continue;
+        }
+
+        games.push(game._id);
+
+        await mongo.User.updateOne(
+            { _id: player.id },
+            {
+                games: games,
+            }
+        );
+    }
 };
 
 export const createGame = (game: ActiveGame) => {
@@ -122,6 +146,14 @@ export const createGame = (game: ActiveGame) => {
     saveGame(game); // push game to mongo async
 
     return game;
+};
+
+export const getGameHistory = (user: WebSocketUser, last = 3) => {
+    const userGames = finishedGames.filter((game) =>
+        game.players.some((player) => player.id === user.id)
+    );
+
+    return userGames.slice(0, last);
 };
 
 export const finishGame = (game: ActiveGame, winner: string) => {

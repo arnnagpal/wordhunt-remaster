@@ -2,6 +2,28 @@ export function toLower(v: string) {
     return v.toLowerCase();
 }
 
+export const asyncInterval = async (
+    callback: any,
+    ms = 250,
+    triesLeft = -1
+) => {
+    return new Promise((resolve, reject) => {
+        const handleInterval = () => {
+            triesLeft--;
+            const result = callback();
+            if (result) {
+                resolve(result);
+                clearInterval(interval);
+            } else if (triesLeft < 1 && triesLeft !== -1) {
+                reject(new Error("Failed"));
+                clearInterval(interval);
+            }
+        };
+
+        const interval = setInterval(handleInterval, ms);
+    });
+};
+
 export const getPoints = (word: string): number => {
     switch (word.length) {
         case 3:

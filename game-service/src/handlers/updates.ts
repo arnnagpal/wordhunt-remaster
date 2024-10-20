@@ -1,7 +1,10 @@
 import { ActiveGame, Board, UpdateType } from "wordhunt-utils";
 import { WebSocketUser } from "../socket";
 import { finishGame, getRoomName, saveGame, socketToGame } from "../game/game";
-import { LiveGamePlayer } from "wordhunt-utils/src/types/game-player";
+import {
+    GamePlayer,
+    LiveGamePlayer,
+} from "wordhunt-utils/src/types/game-player";
 import { dictionary } from "../game/dictionary";
 import { getPoints } from "wordhunt-utils/src/utils";
 import Elysia from "elysia";
@@ -11,6 +14,7 @@ const timerMap = new Map<number, Timer>();
 async function broadcastWinCondition(
     game: ActiveGame,
     server: Elysia,
+    userPlayer: LiveGamePlayer,
     userData: WebSocketUser
 ) {
     // check if all players have finished
@@ -31,12 +35,16 @@ async function broadcastWinCondition(
                     updateType: "END_GAME",
                     data: {
                         status: "WAITING_FOR_PLAYERS",
-                        finisher: userData.username,
+                        finisher: {
+                            username: userData.username,
+                            id: userData.id,
+                            words: userPlayer.words,
+                            score: userPlayer.score,
+                        } as GamePlayer,
                         players: game.players
                             .filter((p) => p.time_left > 0) // only players who haven't finished
                             .map((p) => ({
                                 id: p.id,
-                                time_left: p.time_left,
                             })),
                     },
                 })
@@ -53,7 +61,7 @@ async function broadcastWinCondition(
     let tie = false;
     for (const player of game.players) {
         if (player.score === maxScore) {
-            winner = "TIE";
+            winner = "-";
             maxScore = player.score;
             break;
         }
@@ -64,7 +72,7 @@ async function broadcastWinCondition(
         for (const player of game.players) {
             if (player.score > maxScore) {
                 maxScore = player.score;
-                winner = player.id;
+                winner = player.username;
             }
         }
     }
@@ -78,6 +86,12 @@ async function broadcastWinCondition(
                 data: {
                     status: "GAME_OVER",
                     winner: winner,
+                    players: game.players.map((p) => ({
+                        username: p.username,
+                        id: p.id,
+                        score: p.score,
+                        words: p.words,
+                    })),
                 },
             })
         );
@@ -126,7 +140,7 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
                         clearInterval(timerMap.get(playerIdx));
                         timerMap.delete(playerIdx);
 
-                        broadcastWinCondition(game, server, userData);
+                        broadcastWinCondition(game, server, player, userData);
 
                         return;
                     }
@@ -249,6 +263,24 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
 
         case "END_GAME": {
             // handle end game
+            const data = socketToGame.get(ws.id);
+            if (!data) {
+                return;
+            }
+            const { room, game, playerIdx } = data;
+            const player = game.players[playerIdx] as LiveGamePlayer;
+
+            if (!player) {
+                return;
+            }
+
+            if (timerMap.has(playerIdx)) {
+                clearInterval(timerMap.get(playerIdx));
+                timerMap.delete(playerIdx);
+            }
+
+            player.time_left = 0;
+            broadcastWinCondition(game, server, player, userData);
             break;
         }
         default:

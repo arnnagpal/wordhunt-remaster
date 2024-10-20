@@ -9,8 +9,7 @@ import {
     saveGameHistory,
 } from "./game/game";
 import { loadDictionary } from "./game/letters";
-import { solveBoard } from "./game/board";
-import { Board } from "wordhunt-utils";
+import { setupMatchmaking } from "./game/matchmaking";
 
 dotenv.config();
 
@@ -44,6 +43,8 @@ await loadDictionary();
 
 // load game history
 loadGameHistory();
+
+setupMatchmaking();
 
 const server = new Elysia();
 

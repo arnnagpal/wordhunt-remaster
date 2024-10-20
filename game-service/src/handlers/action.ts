@@ -1,15 +1,16 @@
-import { ActiveGame, Game } from "wordhunt-utils";
+import { ActiveGame, Game, GamePreset } from "wordhunt-utils";
 import {
     createGame,
     getActiveGame,
     getRoomName,
     socketToGame,
 } from "../game/game";
-import { WebSocketUser } from "../socket";
+import { connectedUsers, WebSocketUser } from "../socket";
 import { LiveGamePlayer } from "wordhunt-utils/src/types/game-player";
 import { generateIdFromEntropySize } from "lucia";
 import { createBoard } from "../game/board";
 import Elysia from "elysia";
+import { find_match, remove_from_queue } from "../game/matchmaking";
 
 export async function handleAction(server: Elysia, ws: any, message: any) {
     const userData = ws.data.store as WebSocketUser;
@@ -18,47 +19,7 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
         switch (data.action) {
             case "CREATE": {
                 // handle create game
-                const gameData = data.data;
-
-                const id = generateIdFromEntropySize(10);
-                const time = gameData.time;
-                const players: LiveGamePlayer[] = [];
-
-                const playerIds = gameData.players as string[];
-                for (let i in playerIds) {
-                    players.push({
-                        id: playerIds[i],
-                        username: userData.username,
-                        words: [],
-                        score: 0,
-
-                        game_id: id,
-                        letters_selected: [],
-                        time_left: time,
-                    } as LiveGamePlayer);
-                }
-
-                const singlePlayer = players.length === 1 || time === -1;
-                const board = await createBoard(4);
-
-                const game = createGame({
-                    _id: id,
-                    session_type: 0,
-                    players: players,
-                    board: board.toJSON(),
-                    timer: time,
-                    created_at: Date.now(),
-                    single_player: singlePlayer,
-                } as ActiveGame);
-
-                ws.send(
-                    JSON.stringify({
-                        action: data.action,
-                        data: {
-                            game_id: game._id,
-                        },
-                    })
-                );
+                await createNewGame(data);
                 break;
             }
 
@@ -99,8 +60,97 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
 
                 break;
             }
+
+            case "QUEUE": {
+                // handle queue game
+
+                try {
+                    await find_match(userData);
+                } catch (e) {
+                    console.log(e);
+
+                    ws.send(
+                        JSON.stringify({
+                            action: "QUEUE",
+                            data: {
+                                error: "No opponent found",
+                            },
+                        })
+                    );
+
+                    return;
+                }
+
+                break;
+            }
+
+            case "CANCEL_QUEUE": {
+                // handle cancel queue
+                remove_from_queue(userData);
+
+                ws.send(JSON.stringify({ action: "CANCEL_QUEUE" }));
+                break;
+            }
             default:
                 console.log("Unknown action");
         }
+    }
+}
+
+export async function createNewGame(data: any) {
+    const gameData = data.data;
+
+    const id = generateIdFromEntropySize(10);
+    const time = gameData.time;
+    const players: LiveGamePlayer[] = [];
+
+    const playerIds = gameData.players as string[];
+
+    let users = [];
+    for (let i in playerIds) {
+        const userData = connectedUsers[playerIds[i]];
+        users.push(userData);
+    }
+
+    for (let i in playerIds) {
+        const userData = connectedUsers[playerIds[i]].data.store;
+        players.push({
+            id: playerIds[i],
+            username: userData.username,
+            words: [],
+            score: 0,
+
+            game_id: id,
+            letters_selected: [],
+            time_left: time,
+        } as LiveGamePlayer);
+    }
+
+    const singlePlayer = players.length === 1 || time === -1;
+    const board = await createBoard(4);
+
+    const game = createGame({
+        _id: id,
+        session_type: 0,
+        players: players,
+        board: board.toJSON(),
+        timer: time,
+        created_at: Date.now(),
+        single_player: singlePlayer,
+    } as ActiveGame);
+
+    for (let i = 0; i < users.length; i++) {
+        const ws = users[i] as any;
+
+        console.log("Pushing game", game._id, "to", ws.data.store.username);
+
+        ws.send(
+            JSON.stringify({
+                action: data.action,
+                data: {
+                    game_id: game._id,
+                },
+            })
+        );
     }
 }

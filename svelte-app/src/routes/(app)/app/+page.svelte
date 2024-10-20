@@ -7,16 +7,32 @@
 	import { GamePreset } from 'wordhunt-utils';
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { SocketClient } from '$lib/socket';
+	import { HistoryIcon } from 'lucide-svelte';
+	import WaitingSpinner from '$lib/WaitingSpinner.svelte';
 
 	export let data: PageData;
 
 	let socket: SocketClient;
+
+	let queuing = false;
+
+	let readyState = 0;
 	onMount(async () => {
 		console.log('Dashboard page loaded');
 
 		socket = new SocketClient(data.session.jwt);
-		await socket.setupSocket();
+		socket.onStatusChange((status) => {
+			if ((status as any).status === 'closed') {
+				console.log('removed from queue');
+				queuing = false;
+			}
+			console.log('Socket status: ' + JSON.stringify(status));
+			socket = socket;
+			readyState = socket.client.readyState;
+		});
 		socket.onMessage(handleMessage);
+
+		await socket.setupSocket();
 	});
 
 	function handleMessage(data: object) {
@@ -24,6 +40,8 @@
 
 		const action = message.action;
 		const msgData = message.data;
+
+		console.log(message);
 
 		switch (action) {
 			case 'CREATE': {
@@ -33,6 +51,20 @@
 				setTimeout(() => {
 					goto('/game/' + msgData.game_id);
 				}, 100);
+				break;
+			}
+
+			case 'QUEUE': {
+				if (msgData.error) {
+					console.error('Failed to find match: ' + msgData.error);
+				}
+
+				queuing = false;
+				break;
+			}
+
+			case 'CANCEL_QUEUE': {
+				queuing = false;
 				break;
 			}
 		}
@@ -46,27 +78,8 @@
 
 	async function joinQueue() {
 		console.log('Joining queue');
-
-		const response = await fetch('/api/game/join', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				auth_token: data.user.id
-			})
-		});
-
-		if (response.ok) {
-			const game = await response.json();
-
-			setTimeout(() => {
-				console.log('Game joined: ' + game.game_id);
-				goto('/game/' + game.game_id);
-			}, 100);
-		} else {
-			console.error('Failed to join queue: ' + response.status);
-		}
+		socket.queueGame();
+		queuing = true;
 	}
 
 	beforeNavigate(() => {
@@ -78,6 +91,10 @@
 	<title>Word Hunt - Dashboard</title>
 	<meta content="Word Hunt - Dashboard" name="description" />
 </svelte:head>
+
+{#if !socket || readyState !== 1 || queuing}
+	<WaitingSpinner />
+{/if}
 
 <div class="flex justify-center items-center">
 	<div class="flex justify-center items-center h-screen">
@@ -91,13 +108,27 @@
 					</div>
 
 					<Label class="block m-auto text-4xl font-bold text-center flex-grow">DASHBOARD</Label>
+
+					<div class="absolute top-0 right-0 mt-8">
+						<Button variant="ghost" class="ml-auto mr-0 h-7 p-2" on:click={() => goto('/history')}>
+							<HistoryIcon class="w-6 h-6" />
+						</Button>
+					</div>
 				</div>
 				<Label class="text-xl font-bold text-center -mt-1"
 					>WELCOME, {data.user.display_name.toUpperCase()}</Label
 				>
 			</div>
 
+			<!-- <div class="flex flex-row items-center justify-center">
+				<Label class="text-xl font-bold text-center mb-1">SINGLEPLAYER</Label>
+
+				<Button variant="outline" class="ml-auto mr-0 h-7 p-2">
+					<HistoryIcon class="w-5 h-5" />
+				</Button>
+			</div> -->
 			<Label class="text-xl font-bold text-center mb-1">SINGLEPLAYER</Label>
+
 			<Button
 				class="transition-all duration-200 ease-in-out
                  text-gray-900 text-xl
@@ -117,6 +148,11 @@
 				Unlimited
 			</Button>
 
+			<!-- <div class="flex flex-row items-center justify-center">
+				<Button variant="outline" class="ml-auto mr-0 h-7 p-2">
+					<HistoryIcon class="w-5 h-5" />
+				</Button>
+			</div> -->
 			<Label class="text-xl font-bold text-center mb-1">MULTIPLAYER</Label>
 			<Button
 				class="transition-all duration-200 ease-in-out
@@ -128,7 +164,7 @@
 				Unrated
 			</Button>
 
-			<Button
+			<!-- <Button
 				class="transition-all duration-200 ease-in-out
             text-gray-900 text-xl
                   rounded mb-2"
@@ -136,8 +172,16 @@
 				on:click={joinQueue}
 			>
 				Competitive
-			</Button>
+			</Button> -->
 
+			<Button
+				class="transition-all duration-200 ease-in-out
+                 text-gray-900 text-xl hover:bg-gray-200 bg-gray-200
+                       rounded mb-2"
+				variant="default"
+			>
+				Competitive (WIP)
+			</Button>
 			<Button
 				class="transition-all duration-200 ease-in-out
                  text-gray-900 text-xl hover:bg-gray-200 bg-gray-200

@@ -1,12 +1,12 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
 	import ExitButton from './components/exit/ExitButton.svelte';
 
+	const dispatch = createEventDispatcher();
 	export let words: number = 0;
 	export let score: number = 0;
 
 	export let time = -1;
-
-	export let data: any;
 
 	let displayScore = score;
 	let oldScore = score;
@@ -73,7 +73,7 @@
 		class="flex justify-center items-center bg-white w-[90vw] max-w-[420px] h-20 rounded-b-xl relative"
 	>
 		<div class="absolute top-0 left-0 mt-[20px]">
-			<ExitButton {data} />
+			<ExitButton on:exit={() => dispatch('exit', {})} />
 		</div>
 
 		<div class="flex flex-col text-left">

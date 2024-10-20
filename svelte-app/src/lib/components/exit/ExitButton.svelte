@@ -1,35 +1,22 @@
 <script lang="ts">
-    import {superForm} from "sveltekit-superforms";
-    import WaitingSpinner from "$lib/WaitingSpinner.svelte";
+	import { DoorClosed, DoorOpen } from 'lucide-svelte';
+	import Button from '../ui/button/button.svelte';
+	import { createEventDispatcher } from 'svelte';
 
-    import * as Form from "$lib/components/ui/form";
-    import {DoorClosed, DoorOpen} from "lucide-svelte";
+	const dispatcher = createEventDispatcher();
 
-    export let data: any;
-
-    const form = superForm(data.form, {
-        delayMs: 500,
-        timeoutMs: 8000
-    });
-
-    let hovering = false;
-
-    const {enhance, delayed, timeout, submitting} = form;
+	let hovering = false;
 </script>
 
-
-<form action="?/exit" class="flex flex-col justify-center items-center" method="POST" use:enhance>
-    <Form.Button class="transition-all duration-200 ease-in-out
-                 text-gray-900 text-4xl ml-5
-                      font-bold rounded" variant="ghost">
-        {#if hovering}
-            <DoorOpen />
-        {:else}
-            <DoorClosed />
-        {/if}
-    </Form.Button>
-
-    {#if $delayed || $timeout || $submitting}
-        <WaitingSpinner />
-    {/if}
-</form>
+<Button
+	variant="ghost"
+	on:mouseenter={() => (hovering = true)}
+	on:mouseleave={() => (hovering = false)}
+	on:click={() => dispatcher('exit', {})}
+>
+	{#if hovering}
+		<DoorOpen />
+	{:else}
+		<DoorClosed />
+	{/if}
+</Button>

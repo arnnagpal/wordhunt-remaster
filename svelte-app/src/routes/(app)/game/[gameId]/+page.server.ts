@@ -1,9 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { SessionType, type Game } from 'wordhunt-utils';
-import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
-import { z } from 'zod';
 
 export const load: PageServerLoad = async (event) => {
 	const user = event.locals.user;
@@ -52,7 +49,6 @@ export const load: PageServerLoad = async (event) => {
 	};
 
 	return {
-		form: await superValidate(zod(z.object({}))),
 		game_id: params.gameId,
 		game,
 		auth_session: event.locals.session,

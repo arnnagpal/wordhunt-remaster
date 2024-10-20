@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export class SocketClient {
-	private socket!: WebSocket;
+	public client!: WebSocket;
 	private jwt: string;
 	private listeners: { [key: string]: Array<(data: object) => void> } = {};
 
@@ -11,10 +11,10 @@ export class SocketClient {
 	async setupSocket(reconnectInterval?: NodeJS.Timeout): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			console.log('Setting up socket');
-			this.socket = new WebSocket('ws://localhost:3000/ws', this.jwt);
+			this.client = new WebSocket('ws://localhost:3000/ws', this.jwt);
 
 			// message is received
-			this.socket.addEventListener('message', (event) => {
+			this.client.addEventListener('message', (event) => {
 				// console.log('Received message', event.data);
 				const data = {
 					detail: {
@@ -30,7 +30,7 @@ export class SocketClient {
 			});
 
 			// socket opened
-			this.socket.addEventListener('open', (event) => {
+			this.client.addEventListener('open', (event) => {
 				if (reconnectInterval) {
 					clearInterval(reconnectInterval);
 					console.log('Reconnected to server');
@@ -38,12 +38,23 @@ export class SocketClient {
 					console.log('Connected to server');
 				}
 
+				if (this.listeners['status']) {
+					this.listeners['status'].forEach((callback) => {
+						callback({ status: 'open' });
+					});
+				}
+
 				resolve();
 			});
 
 			// socket closed
-			this.socket.addEventListener('close', (event) => {
+			this.client.addEventListener('close', (event) => {
 				console.log('Disconnected from server', event.code);
+				if (this.listeners['status']) {
+					this.listeners['status'].forEach((callback) => {
+						callback({ status: 'close', code: event.code, reason: event.reason });
+					});
+				}
 
 				if (reconnectInterval) {
 					return;
@@ -61,19 +72,19 @@ export class SocketClient {
 
 				console.log('Attempting to reconnect to server');
 				// try to reconnect 3 times with 5 second interval
-				let count = 0;
+				// let count = 0;
 				const interval = setInterval(() => {
-					if (count === 3) {
-						clearInterval(interval);
-					} else {
-						this.setupSocket(interval);
-						count++;
-					}
+					// if (count === 3) {
+					// clearInterval(interval);
+					// } else {
+					this.setupSocket(interval);
+					// count++;
+					// }
 				}, 5000);
 			});
 
 			// error handler
-			this.socket.addEventListener('error', (event) => {
+			this.client.addEventListener('error', (event) => {
 				console.log('Error occurred', event);
 				reject();
 			});
@@ -82,7 +93,7 @@ export class SocketClient {
 
 	createGame(time: number, players: string[]) {
 		// request to create game
-		this.socket.send(
+		this.client.send(
 			JSON.stringify({
 				action: 'CREATE',
 				data: {
@@ -99,6 +110,18 @@ export class SocketClient {
 			JSON.stringify({
 				action: 'JOIN',
 				gameId
+			})
+		);
+	}
+
+	queueGame() {
+		// request to queue game
+		this.sendMessage(
+			JSON.stringify({
+				action: 'QUEUE',
+				data: {
+					type: 'casual'
+				}
 			})
 		);
 	}
@@ -122,7 +145,7 @@ export class SocketClient {
 					resolve(!!message.data.validWord);
 
 					// remove listener
-					this.removeListenerByIdx(listenerIdx);
+					this.removeListenerByIdx('message', listenerIdx);
 				}
 			});
 
@@ -168,27 +191,34 @@ export class SocketClient {
 		return this.listeners['message'].length - 1;
 	}
 
-	removeListener(callback: (data: object) => void) {
-		this.listeners['message'] = this.listeners['message'] || [];
-		const index = this.listeners['message'].indexOf(callback);
+	onStatusChange(callback: (data: object) => void): number {
+		this.listeners['status'] = this.listeners['status'] || [];
+		this.listeners['status'].push(callback);
+
+		return this.listeners['status'].length - 1;
+	}
+
+	removeListener(type: string, callback: (data: object) => void) {
+		this.listeners[type] = this.listeners[type] || [];
+		const index = this.listeners[type].indexOf(callback);
 		if (index !== -1) {
-			this.listeners['message'].splice(index, 1);
+			this.listeners[type].splice(index, 1);
 		}
 	}
 
-	removeListenerByIdx(index: number) {
-		this.listeners['message'] = this.listeners['message'] || [];
-		if (index < this.listeners['message'].length) {
-			this.listeners['message'].splice(index, 1);
+	removeListenerByIdx(type: string, index: number) {
+		this.listeners[type] = this.listeners[type] || [];
+		if (index < this.listeners[type].length) {
+			this.listeners[type].splice(index, 1);
 		}
 	}
 
 	sendMessage(message: string) {
 		// console.log('Sending message', message);
-		this.socket.send(message);
+		this.client.send(message);
 	}
 
 	disconnect() {
-		this.socket.close();
+		this.client.close();
 	}
 }

@@ -4,9 +4,9 @@
 	import GameHeader from '$lib/GameHeader.svelte';
 	import { type ScoreEvent, WordSelectionState, type SelectionEvent } from 'ambient';
 	import GameScore from '$lib/GameScore.svelte';
-	import { afterNavigate, beforeNavigate, invalidateAll } from '$app/navigation';
+	import { afterNavigate, beforeNavigate, goto, invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { Board, type UpdateType } from 'wordhunt-utils';
+	import { Board, type GamePlayer, type UpdateType } from 'wordhunt-utils';
 	import { SocketClient } from '$lib/socket';
 	import GameOver from '$lib/GameOver.svelte';
 
@@ -33,29 +33,13 @@
 
 	let socket: SocketClient = new SocketClient(data.auth_session.jwt);
 
+	let gameWinner = '';
+	let waitingOn: string[] = [];
+	let finishedPlayers: GamePlayer[] = [];
 	$: {
 		if (data.game?.board && !board) {
 			board = JSON.parse(<string>data.game.board) as Board;
 		}
-
-		// if (data.player?.word_bank) {
-		// 	const wordBank = <string[]>data.player.word_bank;
-		// 	if (wordBank.length > word_bank.length) {
-		// 		word_bank = wordBank;
-		// 		wordCount = wordBank.length;
-		// 	}
-		// }
-
-		// if (data.player?.score) {
-		// 	const playerScore = <number>data.player.score;
-		// 	if (playerScore > score) {
-		// 		score = playerScore;
-		// 	}
-		// }
-
-		// if (data.player?.time_left && timer === -1) {
-		// 	timer = <number>data.player?.time_left;
-		// }
 	}
 
 	function scoreChange(event: CustomEvent<ScoreEvent>) {
@@ -117,6 +101,39 @@
 				break;
 			}
 			case 'END_GAME': {
+				const data = json.data;
+				const status = data.status;
+				switch (status) {
+					case 'WAITING_FOR_PLAYERS': {
+						const finisher = data.finisher as GamePlayer;
+						const players = data.players;
+
+						players.forEach((player: any) => {
+							if (!waitingOn.includes(player.id)) {
+								waitingOn.push(player.id);
+							}
+						});
+
+						if (waitingOn.includes(finisher.id)) {
+							waitingOn = waitingOn.filter((player) => player !== finisher.id);
+						}
+
+						if (!finishedPlayers.includes(finisher)) {
+							finishedPlayers.push(finisher);
+						}
+
+						break;
+					}
+					case 'GAME_OVER': {
+						const winner = data.winner;
+						const dataPlayers = data.players as GamePlayer[];
+
+						finishedPlayers = dataPlayers;
+						waitingOn = [];
+						gameWinner = winner;
+						break;
+					}
+				}
 				gameDisabled = true;
 				break;
 			}
@@ -128,11 +145,11 @@
 			throw new Error('No game id provided');
 		}
 
+		socket.onMessage(onSocketMessage);
+
 		await socket.setupSocket();
 
-		socket.onMessage(onSocketMessage);
 		socket.joinGame(data.game_id);
-
 		socket.startTimer();
 	});
 
@@ -160,11 +177,25 @@
 	<meta content="Word Hunt - In Game" name="description" />
 </svelte:head>
 
-<GameOver />
+<GameOver
+	bind:open={gameDisabled}
+	bind:winner={gameWinner}
+	bind:waitingOn
+	bind:players={finishedPlayers}
+/>
 <div class="flex flex-col justify-between items-center">
 	<div class="flex flex-col items-center h-1/4">
 		<!--		game header   -->
-		<GameHeader {data} bind:score bind:words={wordCount} bind:time={timer} />
+		<GameHeader
+			on:exit={() => {
+				socket.endGame();
+				socket.disconnect();
+				goto('/app');
+			}}
+			bind:score
+			bind:words={wordCount}
+			bind:time={timer}
+		/>
 	</div>
 
 	<div class="flex flex-col items-center w-screen h-[15vh] mt-20">
