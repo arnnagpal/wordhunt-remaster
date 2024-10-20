@@ -175,6 +175,14 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
                 return;
             }
 
+            if (player.time_left <= 0 && player.time_left !== -1) {
+                return;
+            }
+
+            if (game.session_type === 1) {
+                return;
+            }
+
             console.log("Request to select letter", row, col, letter, index);
 
             // check if the board has the letter
@@ -215,6 +223,14 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
             const player = game.players[playerIdx] as LiveGamePlayer;
 
             if (!player) {
+                return;
+            }
+
+            if (player.time_left <= 0 && player.time_left !== -1) {
+                return;
+            }
+
+            if (game.session_type === 1) {
                 return;
             }
 
