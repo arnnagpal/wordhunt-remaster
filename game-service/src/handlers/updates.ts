@@ -162,7 +162,7 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
         case "LETTER_SELECT": {
             // handle letter select
             const { row, col, letter, index } = data.data;
-            const gameData = socketToGame.get(ws.id);
+            const gameData = socketToGame.get(userData.id);
             if (!gameData) {
                 return;
             }
@@ -214,7 +214,7 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
 
         case "SUBMIT_SELEC": {
             // handle submit selection
-            const gameData = socketToGame.get(ws.id);
+            const gameData = socketToGame.get(userData.id);
             if (!gameData) {
                 return;
             }
@@ -275,7 +275,7 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
 
         case "END_GAME": {
             // handle end game
-            const data = socketToGame.get(ws.id);
+            const data = socketToGame.get(userData.id);
             if (!data) {
                 return;
             }
