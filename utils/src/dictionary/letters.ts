@@ -1,5 +1,10 @@
 import { readFile } from "fs/promises";
 import { dictionary, letterFrequency } from "./dictionary";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 
 export async function loadDictionary() {
     const dictionaryFile = await readFile(
