@@ -3,7 +3,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { SessionType, type Game } from 'wordhunt-utils';
 import process from 'node:process';
-import { dictionary } from 'wordhunt-utils/src/dictionary/dictionary';
+import { serializedDictionary } from '../../../../hooks.server';
 
 export const load: PageServerLoad = async (event: any) => {
 	const user = event.locals.user;
@@ -52,7 +52,7 @@ export const load: PageServerLoad = async (event: any) => {
 	};
 
 	return {
-		dictionary: dictionary.toJSON(),
+		dictionary: serializedDictionary,
 		game_id: params.gameId,
 		game,
 		auth_session: event.locals.session,

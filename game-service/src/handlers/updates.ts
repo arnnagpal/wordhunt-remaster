@@ -175,6 +175,8 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
                 return;
             }
 
+            console.log("Request to select letter", row, col, letter, index);
+
             // check if the board has the letter
             const x = row;
             const y = col;
@@ -220,6 +222,14 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
 
             const letters = player.letters_selected as string[];
             const word = letters.join("");
+
+            console.log(
+                "Attempt",
+                word,
+                getPoints(word),
+                player.score,
+                word.length
+            );
 
             if (words.find((w) => w === word)) {
                 // word already used
