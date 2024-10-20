@@ -39,7 +39,7 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
                     (player) => player.id === userData.id
                 ) as LiveGamePlayer;
 
-                socketToGame.set(ws.id, {
+                socketToGame.set(player.id, {
                     room: roomName,
                     playerIdx: game.players.findIndex(
                         (player) => player.id === userData.id

@@ -5,6 +5,7 @@ import { MongoClient, RedisClient } from "wordhunt-utils/src/server";
 import { handleAction } from "./handlers/action";
 import { handleUpdates } from "./handlers/updates";
 import { remove_from_queue } from "./game/matchmaking";
+import { socketToGame } from "./game/game";
 
 export interface WebSocketUser {
     session_token: string;
@@ -108,6 +109,7 @@ export function createWebSocket(
         },
         async open(ws) {
             const userData = ws.data.store as WebSocketUser;
+
             connectedUsers[userData.id] = ws;
 
             pingIntervals[userData.id] = setInterval(() => {
@@ -119,6 +121,15 @@ export function createWebSocket(
 
                 console.log("Keep-alive ping sent to", userData.username);
             }, 50000);
+
+            if (socketToGame.has(userData.id)) {
+                const data = socketToGame.get(userData.id);
+                if (!data) {
+                    return;
+                }
+                const { room } = data;
+                ws.subscribe(room);
+            }
         },
         async message(ws: any, message: any) {
             const data = message;

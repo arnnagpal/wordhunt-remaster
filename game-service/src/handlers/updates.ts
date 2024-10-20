@@ -95,6 +95,8 @@ async function broadcastWinCondition(
                 },
             })
         );
+
+        socketToGame.delete(player.id);
     }
 
     // update game to finished
@@ -108,7 +110,7 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
     const updateType = data.updateType as UpdateType;
     switch (updateType) {
         case "START_TIME": {
-            const data = socketToGame.get(ws.id);
+            const data = socketToGame.get((ws.data.store as WebSocketUser).id);
             if (!data) {
                 return;
             }
@@ -279,7 +281,7 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
             if (!data) {
                 return;
             }
-            const { room, game, playerIdx } = data;
+            const { game, playerIdx } = data;
             const player = game.players[playerIdx] as LiveGamePlayer;
 
             if (!player) {

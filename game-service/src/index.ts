@@ -75,9 +75,12 @@ server.get(process.env.ORIGIN_PREFIX + "/game/:id/status", async (req: any) => {
 
     publicGame.board = JSON.parse(publicGame.board);
 
+    publicGame.players = JSON.parse(JSON.stringify(publicGame.players));
+
     for (const player of publicGame.players) {
         delete player.game_id;
         delete player.letters_selected;
+        delete player.time_left;
     }
 
     return new Response(JSON.stringify(publicGame), {
