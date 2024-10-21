@@ -80,7 +80,9 @@
 										<p class="text-lg font-bold">Waiting...</p>
 									</div>
 								{:else}
-									{#each player.words as word}
+									{#each player.words.toSorted((a, b) => {
+										return getPoints(b) - getPoints(a);
+									}) as word}
 										<div class="flex flex-row gap-2 justify-between">
 											<p class="text-lg font-bold">{word}</p>
 											<p class="text-lg font-bold">{getPoints(word)}</p>

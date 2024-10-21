@@ -18,7 +18,10 @@
 	}
 
 	function getDate(game: Game) {
-		return new Date(game.ended_at).toLocaleString();
+		if (!game.ended_at) {
+			return 'In Progress';
+		}
+		return new Date(game.ended_at).toLocaleString().replaceAll(',', '');
 	}
 
 	function getGameName(game: Game) {
