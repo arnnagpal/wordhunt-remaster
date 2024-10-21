@@ -84,8 +84,15 @@ export const reloadLeaderboard = async () => {
 
 export const getLeaders = (count: number) => {
     // get values from the leaderboard
-    const values = Object.values(leaderboard);
+    let values = Object.values(leaderboard);
     // sort the values
+
+    values = values.map((value, _index) => ({
+        _id: value._id,
+        username: value.username,
+        score: Math.round(value.score),
+    }));
+
     values.sort((a, b) => b.score - a.score);
 
     return values.slice(0, count);
