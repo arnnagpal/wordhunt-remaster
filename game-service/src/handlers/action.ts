@@ -1,4 +1,4 @@
-import { ActiveGame, Game, GamePreset } from "wordhunt-utils";
+import { ActiveGame } from "wordhunt-utils";
 import {
     createGame,
     getActiveGame,
@@ -11,7 +11,7 @@ import { LiveGamePlayer } from "wordhunt-utils/src/types/game-player";
 import { generateIdFromEntropySize } from "lucia";
 import { createBoard } from "wordhunt-utils/src/dictionary/board";
 import Elysia from "elysia";
-import { find_match, remove_from_queue } from "../game/matchmaking";
+import { findMatch, removeFromQueue } from "../game/matchmaking";
 import { broadcastWinCondition, timerMap } from "./updates";
 
 export async function handleAction(server: Elysia, ws: any, message: any) {
@@ -116,7 +116,7 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
                 // handle queue game
 
                 try {
-                    await find_match(userData);
+                    await findMatch(userData);
                 } catch (e) {
                     console.log(e);
 
@@ -137,7 +137,7 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
 
             case "CANCEL_QUEUE": {
                 // handle cancel queue
-                remove_from_queue(userData);
+                removeFromQueue(userData);
 
                 ws.send(JSON.stringify({ action: "CANCEL_QUEUE" }));
                 break;

@@ -4,7 +4,7 @@ import { validateJWT } from "oslo/jwt";
 import { MongoClient, RedisClient } from "wordhunt-utils/src/server";
 import { handleAction } from "./handlers/action";
 import { handleUpdates } from "./handlers/updates";
-import { remove_from_queue } from "./game/matchmaking";
+import { removeFromQueue } from "./game/matchmaking";
 import { socketToGame } from "./game/game";
 
 export interface WebSocketUser {
@@ -12,6 +12,10 @@ export interface WebSocketUser {
     id: string;
     username: string;
     display_name: string;
+    best_game: {
+        game_id: string;
+        score: number;
+    };
     rating: number;
     rating_deviation: number;
     rating_volatility: number;
@@ -102,6 +106,7 @@ export function createWebSocket(
                 id: user.id,
                 username: user.username,
                 display_name: user.display_name,
+                best_game: user.best_game,
                 rating: user.rating,
                 rating_deviation: user.rating_deviation,
                 rating_volatility: user.rating_volatility,
@@ -146,7 +151,7 @@ export function createWebSocket(
             const userData = ws.data.store as WebSocketUser;
 
             // remove from queue
-            remove_from_queue(userData);
+            removeFromQueue(userData);
 
             // remove from connected users
             delete connectedUsers[userData.id];

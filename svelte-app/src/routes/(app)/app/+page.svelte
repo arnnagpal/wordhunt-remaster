@@ -7,7 +7,7 @@
 	import { GamePreset } from 'wordhunt-utils';
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { SocketClient } from '$lib/socket';
-	import { HistoryIcon } from 'lucide-svelte';
+	import { HistoryIcon, Trophy } from 'lucide-svelte';
 	import WaitingSpinner from '$lib/WaitingSpinner.svelte';
 
 	export let data: PageData;
@@ -99,17 +99,17 @@
 <div class="flex justify-center items-center">
 	<div class="flex justify-center items-center h-screen">
 		<div
-			class="flex justify-center flex-col bg-white w-[85vw] max-w-[440px] rounded-lg shadow-2xl px-6 py-3"
+			class="flex justify-center flex-col bg-white w-[85dvw] max-w-[440px] rounded-lg shadow-2xl px-6 py-3"
 		>
 			<div class="flex justify-center flex-col pb-5">
 				<div class="relative pt-2">
-					<div class="absolute top-0 left-0 mt-[26px]">
+					<div class="absolute top-0 -left-3 mt-[26px]">
 						<LogoutButton {data} />
 					</div>
 
 					<Label class="block m-auto text-4xl font-bold text-center flex-grow">DASHBOARD</Label>
 
-					<div class="absolute top-0 right-0 mt-8">
+					<div class="absolute top-0 -right-2 mt-8">
 						<Button variant="ghost" class="ml-auto mr-0 h-7 p-2" on:click={() => goto('/history')}>
 							<HistoryIcon class="w-6 h-6" />
 						</Button>
@@ -120,15 +120,9 @@
 				>
 			</div>
 
-			<!-- <div class="flex flex-row items-center justify-center">
+			<div class="flex flex-row items-center justify-center">
 				<Label class="text-xl font-bold text-center mb-1">SINGLEPLAYER</Label>
-
-				<Button variant="outline" class="ml-auto mr-0 h-7 p-2">
-					<HistoryIcon class="w-5 h-5" />
-				</Button>
-			</div> -->
-			<Label class="text-xl font-bold text-center mb-1">SINGLEPLAYER</Label>
-
+			</div>
 			<Button
 				class="transition-all duration-200 ease-in-out
                  text-gray-900 text-xl
@@ -148,12 +142,18 @@
 				Unlimited
 			</Button>
 
-			<!-- <div class="flex flex-row items-center justify-center">
-				<Button variant="outline" class="ml-auto mr-0 h-7 p-2">
-					<HistoryIcon class="w-5 h-5" />
-				</Button>
-			</div> -->
-			<Label class="text-xl font-bold text-center mb-1">MULTIPLAYER</Label>
+			<div class="relative">
+				<Label class="block m-auto text-xl font-bold text-center mb-1">MULTIPLAYER</Label>
+				<div class="absolute top-0 right-0">
+					<Button
+						variant="outline"
+						class="ml-auto mr-0 h-7 p-2"
+						on:click={() => goto('/leaderboard')}
+					>
+						<Trophy class="w-5 h-5" />
+					</Button>
+				</div>
+			</div>
 			<Button
 				class="transition-all duration-200 ease-in-out
                  text-gray-900 text-xl

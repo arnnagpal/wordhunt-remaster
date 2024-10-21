@@ -25,6 +25,11 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Word Hunt - History</title>
+	<meta content="Word Hunt - History" name="description" />
+</svelte:head>
+
 <div class="flex justify-center items-center h-screen w-screen">
 	<div class="flex justify-center items-center h-full w-full">
 		<div

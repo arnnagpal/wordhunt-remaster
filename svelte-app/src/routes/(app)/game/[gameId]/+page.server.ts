@@ -2,8 +2,8 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { Board, SessionType, type BoardSolution } from 'wordhunt-utils';
-import process from 'node:process';
 import { Trie } from 'wordhunt-utils/src/dictionary/dictionary';
+import { PUBLIC_GAME_SERVICE_URL } from '$env/static/public';
 
 export const load: PageServerLoad = async (event: any) => {
 	const user = event.locals.user;
@@ -14,7 +14,7 @@ export const load: PageServerLoad = async (event: any) => {
 	}
 
 	// fetch game
-	const gameStatus = await fetch(`${process.env.GAME_SERVICE_URL}/game/${params.gameId}/status`);
+	const gameStatus = await fetch(`${PUBLIC_GAME_SERVICE_URL}/game/${params.gameId}/status`);
 	const gameObj = (await gameStatus.json()) as any;
 
 	if (!gameStatus.ok) {

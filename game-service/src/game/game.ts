@@ -73,6 +73,8 @@ export const loadGameHistory = async () => {
             });
         }
     }
+
+    console.log("Loaded games", finishedGames.length, activeGames.length);
 };
 
 export const saveGameHistory = async () => {
@@ -228,9 +230,9 @@ export const createGame = (game: ActiveGame) => {
     return game;
 };
 
-export const getGameHistory = (user: WebSocketUser, last = 3) => {
+export const getGameHistory = (userId: string, last = 3) => {
     const userGames = finishedGames.filter((game) =>
-        game.players.some((player) => player.id === user.id)
+        game.players.some((player) => player.id === userId)
     );
 
     return userGames.slice(0, last);

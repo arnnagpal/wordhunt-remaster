@@ -10,6 +10,12 @@ import {
 } from "./game/game";
 import { loadDictionary } from "wordhunt-utils/src/dictionary/letters";
 import { setupMatchmaking } from "./game/matchmaking";
+import {
+    getLeaders,
+    loadLeaderboard,
+    reloadLeaderboard,
+} from "./game/leaderboard";
+import cors from "@elysiajs/cors";
 
 dotenv.config();
 
@@ -42,8 +48,10 @@ await mongo.connect();
 await loadDictionary();
 
 // load game history
-loadGameHistory();
+await loadGameHistory();
 
+await loadLeaderboard();
+await reloadLeaderboard();
 setupMatchmaking();
 
 const server = new Elysia({
@@ -90,6 +98,16 @@ server.get(process.env.ORIGIN_PREFIX + "/game/:id/status", async (req: any) => {
     });
 });
 
+server.get(process.env.ORIGIN_PREFIX + "/leaderboard", async () => {
+    const leaders = getLeaders(20);
+
+    return new Response(JSON.stringify(leaders), {
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+});
+
 createWebSocket(server, secret, redis, mongo);
 
 process.on("SIGINT", async () => {
@@ -102,6 +120,7 @@ process.on("exit", async () => {
     saveGameHistory();
 });
 
+server.use(cors());
 server.listen(Number.parseInt(process.env.PORT || "3000"), (s) => {
     console.log(`Listening on ${s.hostname}:${s.port}`);
 });

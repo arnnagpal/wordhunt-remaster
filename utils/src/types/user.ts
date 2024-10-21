@@ -7,6 +7,11 @@ export interface User {
     display_name: string;
     password_hash: string;
 
+    best_game?: {
+        game_id: string;
+        score: number;
+    };
+
     rating: number;
     rating_deviation: number;
     rating_volatility: number;

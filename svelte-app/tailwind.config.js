@@ -66,8 +66,11 @@ const config = {
 					"linear-gradient(rgba(164, 229, 147, 0.6),rgba(164, 229, 147, 0.6)), url('/assets/letter_bg.png')",
 				'letterBackground-Yellow':
 					"linear-gradient(rgba(254, 251, 146, 0.6),rgba(254, 251, 146, 0.6)), url('/assets/letter_bg.png')",
-				'page-game-background': "url('/assets/background.png')"
+				'page-game-background': "url('/assets/background.png')",
+				'chrome-gradient':
+					'-webkit-linear-gradient(-40deg, transparent 0%, transparent 40%, #fff 50%, transparent 60%, transparent 100%)'
 			},
+			background: {},
 			hueRotate: {
 				'-270': '-270deg',
 				270: '270deg',
@@ -105,9 +108,14 @@ const config = {
 					'100%': {
 						opacity: '0'
 					}
+				},
+				shine: {
+					'0%': { backgroundPosition: '200% 0%' },
+					'100%': { backgroundPosition: '-200% 0%' }
 				}
 			},
 			animation: {
+				shine: 'shine 3s linear infinite',
 				jump: 'jump 500ms ease-in-out',
 				'fade-out-expand': 'fade-out-expand 500ms ease-in-out',
 				'fade-out': 'fade-out 500ms ease-in-out'

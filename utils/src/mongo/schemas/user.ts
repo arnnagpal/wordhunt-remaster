@@ -26,6 +26,20 @@ export const userSchema = new mongoose.Schema(
             required: true,
         },
 
+        best_game: {
+            type: {
+                game_id: {
+                    type: String,
+                    required: true,
+                },
+                score: {
+                    type: Number,
+                    required: true,
+                },
+            },
+            required: true,
+        },
+
         // glicko-2 rating system
         rating: {
             type: Number,

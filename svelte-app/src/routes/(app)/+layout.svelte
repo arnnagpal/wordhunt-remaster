@@ -1,9 +1,10 @@
-<script>
+<script lang="ts">
 	import '../../app.css';
 	import { fly } from 'svelte/transition';
 	import { cubicIn, cubicOut } from 'svelte/easing';
+	import type { LayoutServerData, LayoutData } from './$types';
 
-	export let data;
+	export let data: LayoutData;
 
 	const duration = 300;
 	const delay = duration + 100;

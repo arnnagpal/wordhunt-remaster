@@ -1,6 +1,6 @@
 import { ActiveGame, Board, UpdateType } from "wordhunt-utils";
 import { WebSocketUser } from "../socket";
-import { finishGame, getRoomName, saveGame, socketToGame } from "../game/game";
+import { finishGame, getRoomName, socketToGame } from "../game/game";
 import {
     GamePlayer,
     LiveGamePlayer,

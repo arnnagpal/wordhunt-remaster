@@ -36,7 +36,7 @@ export const setupMatchmaking = () => {
     }, 1000 / check_per_second);
 };
 
-export const find_match = async (user: WebSocketUser): Promise<void> => {
+export const findMatch = async (user: WebSocketUser): Promise<void> => {
     return new Promise(async (resolve, reject) => {
         if (in_queue.find((u) => u.id === user.id)) {
             return reject("User already in queue");
@@ -44,7 +44,7 @@ export const find_match = async (user: WebSocketUser): Promise<void> => {
 
         let score_threshold = 3;
         let last_threshold_change = Date.now();
-        let matches = getGameHistory(user);
+        let matches = getGameHistory(user.id);
 
         in_queue.push(user);
         console.log("Finding match for", user.username);
@@ -61,7 +61,7 @@ export const find_match = async (user: WebSocketUser): Promise<void> => {
                     continue;
                 }
 
-                let queue_matches = getGameHistory(queue_user);
+                let queue_matches = getGameHistory(queue_user.id);
                 let score = 0;
 
                 score += Math.abs(queue_user.rating - user.rating) * 0.5;
@@ -118,18 +118,18 @@ export const find_match = async (user: WebSocketUser): Promise<void> => {
     });
 };
 
-export const add_to_queue = (user: WebSocketUser) => {
+export const addToQueue = (user: WebSocketUser) => {
     in_queue.push(user);
 };
 
-export const remove_from_queue = (user: WebSocketUser) => {
+export const removeFromQueue = (user: WebSocketUser) => {
     in_queue = in_queue.filter((u) => u.id !== user.id);
 };
 
-export const get_queue = () => {
+export const getQueue = () => {
     return in_queue;
 };
 
-export const get_queue_size = () => {
+export const getQueueSize = () => {
     return in_queue.length;
 };

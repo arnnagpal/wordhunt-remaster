@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { PUBLIC_GAME_SERVICE_WS } from '$env/static/public';
+
 export class SocketClient {
 	public client!: WebSocket;
 	private jwt: string;
@@ -10,8 +12,8 @@ export class SocketClient {
 
 	setupSocket(reconnectInterval?: NodeJS.Timeout): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			console.log('Setting up socket');
-			this.client = new WebSocket('wss://wordhunt.arnagpal.dev/api/ws', this.jwt);
+			console.log('Connecting to server', PUBLIC_GAME_SERVICE_WS);
+			this.client = new WebSocket(PUBLIC_GAME_SERVICE_WS, this.jwt);
 
 			// message is received
 			this.client.addEventListener('message', (event) => {
