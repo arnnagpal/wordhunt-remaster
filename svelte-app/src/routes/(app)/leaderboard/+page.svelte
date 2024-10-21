@@ -191,7 +191,7 @@
 									color={getColor(i)}
 								/>
 							{:else}
-								<Label class="absolute text-2xl left-16">{player.username}</Label>
+								<Label class="absolute text-2xl left-16">{'@' + player.username}</Label>
 							{/if}
 						</div>
 						<div class="flex-grow relative flex flex-row h-full text-right justify-end gap-2">
