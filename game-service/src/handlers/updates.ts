@@ -8,6 +8,7 @@ import {
 import { dictionary } from "wordhunt-utils/src/dictionary/dictionary";
 import { getPoints } from "wordhunt-utils/src/utils";
 import Elysia from "elysia";
+import { updateScore } from "../game/leaderboard";
 
 export const timerMap = new Map<number, Timer>();
 
@@ -93,6 +94,8 @@ export async function broadcastWinCondition(
                 },
             })
         );
+
+        updateScore(player.id);
 
         socketToGame.delete(player.id);
     }

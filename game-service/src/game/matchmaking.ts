@@ -44,7 +44,7 @@ export const findMatch = async (user: WebSocketUser): Promise<void> => {
 
         let score_threshold = 3;
         let last_threshold_change = Date.now();
-        let matches = getGameHistory(user.id);
+        let matches = getGameHistory(user.id, { last: 3 });
 
         in_queue.push(user);
         console.log("Finding match for", user.username);
@@ -61,7 +61,7 @@ export const findMatch = async (user: WebSocketUser): Promise<void> => {
                     continue;
                 }
 
-                let queue_matches = getGameHistory(queue_user.id);
+                let queue_matches = getGameHistory(queue_user.id, { last: 3 });
                 let score = 0;
 
                 score += Math.abs(queue_user.rating - user.rating) * 0.5;

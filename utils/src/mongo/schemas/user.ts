@@ -27,17 +27,8 @@ export const userSchema = new mongoose.Schema(
         },
 
         best_game: {
-            type: {
-                game_id: {
-                    type: String,
-                    required: true,
-                },
-                score: {
-                    type: Number,
-                    required: true,
-                },
-            },
-            required: true,
+            type: mongoose.Schema.Types.Mixed,
+            required: false,
         },
 
         // glicko-2 rating system
