@@ -110,6 +110,10 @@
 						const finisher = data.finisher as GamePlayer;
 						const players = data.players;
 
+						if (finisher.id === data.auth_user.id) {
+							gameDisabled = true;
+						}
+
 						players.forEach((player: any) => {
 							if (!waitingOn.includes(player.id)) {
 								waitingOn.push(player.id);
@@ -130,13 +134,14 @@
 						const winner = data.winner;
 						const dataPlayers = data.players as GamePlayer[];
 
+						gameDisabled = true;
+
 						finishedPlayers = dataPlayers;
 						waitingOn = [];
 						gameWinner = winner;
 						break;
 					}
 				}
-				gameDisabled = true;
 				break;
 			}
 		}
