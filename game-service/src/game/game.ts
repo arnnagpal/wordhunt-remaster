@@ -230,12 +230,22 @@ export const createGame = (game: ActiveGame) => {
     return game;
 };
 
-export const getGameHistory = (userId: string, last = 3) => {
+export const getGameHistory = (
+    userId: string,
+    opts: {
+        last: number;
+        multiplayer?: boolean;
+    }
+) => {
     const userGames = finishedGames.filter((game) =>
         game.players.some((player) => player.id === userId)
     );
 
-    return userGames.slice(0, last);
+    if (opts.multiplayer) {
+        return userGames.filter((game) => game.players.length > 1);
+    }
+
+    return userGames.slice(0, opts.last);
 };
 
 export const finishGame = (game: ActiveGame, winner: string) => {

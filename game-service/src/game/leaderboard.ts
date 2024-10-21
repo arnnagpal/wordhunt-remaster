@@ -8,7 +8,10 @@ let leaderboard: {
 
 export const updateScore = async (userId: string) => {
     // retrieve the user's recent games
-    const recentGames = getGameHistory(userId, 5);
+    const recentGames = getGameHistory(userId, {
+        last: 5,
+        multiplayer: true,
+    });
 
     if (recentGames.length === 0) {
         return;
@@ -18,10 +21,6 @@ export const updateScore = async (userId: string) => {
 
     let score = 0;
     for (const game of recentGames) {
-        if (game.single_player || game.players.length < 2) {
-            continue;
-        }
-
         const gamePlayer = game.players.find((player) => player.id === userId);
         if (gamePlayer) {
             username = gamePlayer.username;
