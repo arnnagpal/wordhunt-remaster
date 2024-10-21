@@ -13,7 +13,7 @@ export const updateScore = async (userId: string) => {
         multiplayer: true,
     });
 
-    if (recentGames.length === 0) {
+    if (recentGames.length < 5) {
         return;
     }
 
@@ -73,7 +73,7 @@ export const reloadLeaderboard = async () => {
 
     for (let i = 0; i < users.length; i++) {
         const user = users[i];
-        if (user.games.length <= 5) {
+        if (user.games.length < 5) {
             continue;
         }
 
