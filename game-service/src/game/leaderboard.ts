@@ -18,6 +18,10 @@ export const updateScore = async (userId: string) => {
 
     let score = 0;
     for (const game of recentGames) {
+        if (game.single_player || game.players.length < 2) {
+            continue;
+        }
+
         const gamePlayer = game.players.find((player) => player.id === userId);
         if (gamePlayer) {
             username = gamePlayer.username;
