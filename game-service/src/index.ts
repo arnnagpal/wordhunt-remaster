@@ -120,7 +120,6 @@ process.on("exit", async () => {
     saveGameHistory();
 });
 
-server.use(cors());
 server.listen(Number.parseInt(process.env.PORT || "3000"), (s) => {
     console.log(`Listening on ${s.hostname}:${s.port}`);
 });
