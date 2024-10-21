@@ -242,7 +242,9 @@ export const getGameHistory = (
     );
 
     if (opts.multiplayer) {
-        return userGames.filter((game) => game.players.length > 1);
+        return userGames
+            .filter((game) => game.players.length > 1)
+            .slice(0, opts.last);
     }
 
     return userGames.slice(0, opts.last);
