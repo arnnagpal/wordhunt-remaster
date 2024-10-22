@@ -184,12 +184,23 @@
 		socket.disconnect();
 		invalidateAll();
 	});
+
+	function touchHandler(e: TouchEvent) {
+		e.preventDefault();
+	}
 </script>
 
 <svelte:head>
 	<title>Word Hunt - In Game</title>
 	<meta content="Word Hunt - In Game" name="description" />
 </svelte:head>
+
+<svelte:body
+	on:touchstart|nonpassive={touchHandler}
+	on:touchend|nonpassive={touchHandler}
+	on:touchmove|nonpassive={touchHandler}
+	on:touchcancel|nonpassive={touchHandler}
+/>
 
 <GameOver
 	bind:open={gameDisabled}
