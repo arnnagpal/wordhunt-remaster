@@ -128,6 +128,15 @@ export class SocketClient {
 		);
 	}
 
+	leaveQueue() {
+		// request to leave queue
+		this.sendMessage(
+			JSON.stringify({
+				action: 'CANCEL_QUEUE'
+			})
+		);
+	}
+
 	startTimer() {
 		// request to start timer
 		this.sendMessage(

@@ -9,6 +9,7 @@
 	import { SocketClient } from '$lib/socket';
 	import { HistoryIcon, Trophy } from 'lucide-svelte';
 	import WaitingSpinner from '$lib/WaitingSpinner.svelte';
+	import { fade } from 'svelte/transition';
 
 	export let data: PageData;
 
@@ -94,6 +95,31 @@
 
 {#if !socket || readyState !== 1 || queuing}
 	<WaitingSpinner />
+{/if}
+
+{#if queuing}
+	<div
+		in:fade
+		out:fade
+		class="z-50 fixed transform top-1/2
+		left-1/2 translate-x-[-50%] translate-y-[-33%] w-screen
+		h-screen self-center
+		pointer-events-auto flex justify-center items-center
+		select-none"
+	>
+		<div class="bg-white rounded-xl p-4 flex flex-col">
+			<Label class="text-center text-2xl">Queuing for a match...</Label>
+			<Button
+				class="transition-all duration-200 ease-in-out
+		text-gray-900 text-xl
+			  rounded mt-4"
+				variant="default"
+				on:click={async () => {
+					socket.leaveQueue();
+				}}>Exit Queue</Button
+			>
+		</div>
+	</div>
 {/if}
 
 <div class="flex justify-center items-center">
