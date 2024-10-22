@@ -33,7 +33,7 @@ export const updateScore = async (userId: string) => {
     // update the user's score in the database
     await mongo.Leaderboard.updateOne(
         { _id: userId },
-        { $set: { score } },
+        { $set: { username, score } },
         { upsert: true }
     ).exec();
 
@@ -92,6 +92,8 @@ export const getLeaders = (count: number) => {
         username: value.username,
         score: Math.round(value.score),
     }));
+
+    console.log(values);
 
     values.sort((a, b) => b.score - a.score);
 

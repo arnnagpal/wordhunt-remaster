@@ -14,76 +14,78 @@
 
 	// let leaderboard = [
 	// 	{
-	// 		name: '@aryan',
+	// 		username: 'aryan',
 	// 		score: 2000000
 	// 	},
 	// 	{
-	// 		name: '@dummy',
+	// 		username: 'dummy',
 	// 		score: 90
 	// 	},
 	// 	{
-	// 		name: '@dummy2',
+	// 		username: 'dummy2',
 	// 		score: 80
 	// 	},
 	// 	{
-	// 		name: '@nobody',
+	// 		username: 'nobody',
 	// 		score: 70
 	// 	},
 	// 	{
-	// 		name: '@whosthat',
+	// 		username: 'whosthat',
 	// 		score: 60
 	// 	},
 	// 	{
-	// 		name: '@isaidnobody',
+	// 		username: 'isaidnobody',
 	// 		score: 50
 	// 	},
 	// 	{
-	// 		name: '@wdym',
+	// 		username: 'wdym',
 	// 		score: 40
 	// 	},
 	// 	{
-	// 		name: '@areyoudeafisaidnobody',
+	// 		username: 'areyoudeafisaidnobody',
 	// 		score: 39
 	// 	},
 	// 	{
-	// 		name: '@nooyudidnt',
+	// 		username: 'nooyudidnt',
 	// 		score: 38
 	// 	},
 	// 	{
-	// 		name: '@yesidid',
+	// 		username: 'yesidid',
 	// 		score: 37
 	// 	},
 	// 	{
-	// 		name: '@noyoudidnt',
+	// 		username: 'noyoudidnt',
 	// 		score: 36
 	// 	},
 	// 	{
-	// 		name: '@yesidid',
+	// 		username: 'yesidid',
 	// 		score: 35
 	// 	},
 	// 	{
-	// 		name: '@noyoudidnt',
+	// 		username: 'noyoudidnt',
 	// 		score: 34
 	// 	},
 	// 	{
-	// 		name: '@yesidid',
+	// 		username: 'yesidid',
 	// 		score: 33
 	// 	},
 	// 	{
-	// 		name: '@yesidid',
+	// 		username: 'yesidid',
 	// 		score: 32
 	// 	},
 	// 	{
-	// 		name: '@yesidid',
+	// 		username: 'yesidid',
 	// 		score: 31
 	// 	},
 	// 	{
-	// 		name: '@yesidid',
+	// 		username: 'yesidid',
 	// 		score: 30
 	// 	}
 	// ];
 
 	const leaderboard = data.leaderboard;
+
+	let vw = 0;
 
 	function formatScore(score: number) {
 		if (score > 1000000) {
@@ -110,12 +112,23 @@
 		if (n === 1) return 'silver';
 		return 'bronze';
 	}
+
+	function getUsername(username: string, vw: number) {
+		// get viewports width
+		if (vw < 640) {
+			return username.slice(0, 10) + (username.length > 10 ? '...' : '');
+		}
+
+		return username.slice(0, 20) + (username.length > 20 ? '...' : '');
+	}
 </script>
 
 <svelte:head>
 	<title>Word Hunt - Leaderboard</title>
 	<meta content="Word Hunt - Leaderboard" name="description" />
 </svelte:head>
+
+<svelte:window bind:innerWidth={vw} />
 
 <AlertDialog.Root bind:open>
 	<AlertDialog.Content>
@@ -157,18 +170,20 @@
 <div class="flex justify-center items-center h-screen w-screen">
 	<div class="flex justify-center items-center h-full w-full">
 		<div
-			class="flex flex-col bg-white w-[40dvw] min-w-fit h-[90dvh] overflow-y-scroll scrollbar-none space-y-4 p-4 rounded-xl"
+			class="flex flex-col bg-white min-w-[80dvw] xl:min-w-[40dvw] h-[90dvh] overflow-y-scroll scrollbar-none space-y-4 p-4 rounded-xl"
 		>
 			<div class="relative pt-2">
-				<div class="absolute top-0 left-0 mt-[13px]">
+				<div class="absolute top-0 left-0 mt-[9px] sm:mt-[13px]">
 					<Button variant="ghost" class="h-7 p-2 text-3xl" on:click={() => goto('/app')}
 						>&#x2190</Button
 					>
 				</div>
 
-				<Label class="block m-auto text-4xl font-bold text-center flex-grow">LEADERBOARD</Label>
+				<Label class="block m-auto text-2xl sm:text-4xl font-bold text-center flex-grow"
+					>LEADERBOARD</Label
+				>
 
-				<div class="absolute top-0 right-0 mt-[8px]">
+				<div class="absolute top-0 right-0 mt-[3px] sm:mt-[8px]">
 					<Button variant="ghost" class="h-7 p-2 py-5 text-3xl" on:click={() => (open = true)}>
 						<Info class="h-6 w-6" />
 					</Button>
@@ -182,21 +197,23 @@
 							? 'bg-slate-200'
 							: ''}"
 					>
-						<div class="[flex-grow:_2] overflow-ellipsis relative flex flex-row">
-							<Label class="text-2xl left-0">{i + 1}</Label>
+						<div class="[flex-grow:_2] w-max relative flex flex-row">
+							<Label class="text-lg sm:text-2xl left-0">{i + 1}</Label>
 							{#if i < 3}
 								<ShinyText
-									text={'@' + player.username}
-									class="absolute left-16 text-2xl"
+									text={'@' + getUsername(player.username, vw)}
+									class="absolute left-8 sm:left-16 text-lg sm:text-2xl"
 									color={getColor(i)}
 								/>
 							{:else}
-								<Label class="absolute text-2xl left-16">{'@' + player.username}</Label>
+								<Label class="absolute text-lg sm:text-2xl left-8 sm:left-16">
+									{'@' + getUsername(player.username, vw)}
+								</Label>
 							{/if}
 						</div>
 						<div class="flex-grow relative flex flex-row h-full text-right justify-end gap-2">
-							<Label class="text-2xl">{formatScore(player.score)}</Label>
-							<Label class="text-2xl">{getEmoji(i)}</Label>
+							<Label class="text-lg sm:text-2xl">{formatScore(player.score)}</Label>
+							<Label class="text-lg sm:text-2xl">{getEmoji(i)}</Label>
 						</div>
 					</div>
 				{/each}
