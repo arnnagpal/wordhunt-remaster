@@ -45,11 +45,14 @@
 	class="bg-slate-200 w-full p-4 rounded-md cursor-pointer hover:bg-slate-300 hover:transition-all transition-all"
 	on:click={() => (open = !open)}
 >
-	<div class="flex flex-row gap-4">
-		<PreviewBoard board={Board.fromJSON(game.board)} />
-		<div class="flex flex-col justify-center">
+	<div class="flex flex-row gap-4 justify-between">
+		<div class="flex justify-start">
+			<PreviewBoard board={Board.fromJSON(game.board)} />
+		</div>
+		<div class="flex-1 flex-col justify-end">
 			<p
-				class="text-2xl font-bold text-ellipsis text-nowrap whitespace-nowrap {game.winner === '-'
+				class="text-xl xl:text-2xl font-bold text-ellipsis text-nowrap whitespace-nowrap {game.winner ===
+				'-'
 					? 'text-yellow-500'
 					: user.username === game.winner
 						? 'text-[#8cde78]'
@@ -57,9 +60,9 @@
 			>
 				{getEmoji(game) + ' ' + getGameName(game)}
 			</p>
-			<p class="text-xl">Date: {getDate(game)}</p>
-			<p class="text-xl">Score: {getScore(game)}</p>
-			<p class="text-xl">Word Count: {getWordCount(game)}</p>
+			<p class="text-lg xl:text-xl">Score: {getScore(game)}</p>
+			<p class="text-lg xl:text-xl">Word Count: {getWordCount(game)}</p>
+			<p class="text-lg xl:text-xl">Date: {getDate(game)}</p>
 		</div>
 
 		<div></div>

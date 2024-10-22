@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
 	export let board;
 </script>
 
 <div class="flex select-none">
 	<div
-		class="grid grid-cols-4 grid-rows-4 gap-1 p-2 m-auto bg-[#4c5f49] border-8 border-[#A4E593] rounded-xl"
+		class="grid grid-cols-4 grid-rows-4 gap-1 p-1.5 xl:p-2 m-auto bg-[#4c5f49] border-8 border-[#A4E593] rounded-xl"
 	>
 		{#each board.board as row}
 			{#each row as letter}
