@@ -7,9 +7,10 @@
 	import { GamePreset } from 'wordhunt-utils';
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { SocketClient } from '$lib/socket';
-	import { HistoryIcon, Trophy } from 'lucide-svelte';
+	import { HistoryIcon, Trophy, UserRoundSearch } from 'lucide-svelte';
 	import WaitingSpinner from '$lib/WaitingSpinner.svelte';
 	import { fade } from 'svelte/transition';
+	import { Separator } from '$lib/components/ui/separator';
 
 	export let data: PageData;
 
@@ -18,6 +19,9 @@
 	let queuing = false;
 
 	let readyState = 0;
+
+	let onlineUsers = 0;
+	let queuedUsers = 0;
 	onMount(async () => {
 		console.log('Dashboard page loaded');
 
@@ -34,6 +38,8 @@
 		socket.onMessage(handleMessage);
 
 		await socket.setupSocket();
+		socket.subscribeOnlineUsers();
+		socket.subscribeQueuedUsers();
 	});
 
 	function handleMessage(data: object) {
@@ -66,6 +72,16 @@
 
 			case 'CANCEL_QUEUE': {
 				queuing = false;
+				break;
+			}
+
+			case 'UPDATE_ONLINE_STATUS': {
+				onlineUsers = msgData.users;
+				break;
+			}
+
+			case 'UPDATE_QUEUED_STATUS': {
+				queuedUsers = msgData.users;
 				break;
 			}
 		}
@@ -133,7 +149,9 @@
 						<LogoutButton {data} />
 					</div>
 
-					<Label class="block m-auto text-4xl font-bold text-center flex-grow">DASHBOARD</Label>
+					<Label class="block m-auto text-3xl sm:text-4xl font-bold text-center flex-grow"
+						>DASHBOARD</Label
+					>
 
 					<div class="absolute top-0 -right-2 mt-8">
 						<Button variant="ghost" class="ml-auto mr-0 h-7 p-2" on:click={() => goto('/history')}>
@@ -141,9 +159,14 @@
 						</Button>
 					</div>
 				</div>
-				<Label class="text-xl font-bold text-center -mt-1"
+				<Label class="text-lg sm:text-xl font-bold text-center -mt-1"
 					>WELCOME, {data.user.display_name.toUpperCase()}</Label
 				>
+
+				<Label class="text-center text-sm text-gray-500 -mt-1 mb-1">
+					Online users: {onlineUsers}
+				</Label>
+				<Separator />
 			</div>
 
 			<div class="flex flex-row items-center justify-center">
@@ -183,11 +206,21 @@
 			<Button
 				class="transition-all duration-200 ease-in-out
                  text-gray-900 text-xl
-                       rounded mb-2"
+                       rounded mb-2 flex flex-row items-center justify-center relative"
 				variant="default"
 				on:click={joinQueue}
 			>
-				Unrated
+				<span> Unrated </span>
+				{#if queuedUsers > 0}
+					<span
+						in:fade
+						out:fade
+						class=" absolute right-3 ml-2 text-base text-gray-500 flex flex-row align-middle justify-center items-center"
+					>
+						({queuedUsers}
+						<UserRoundSearch class="w-4 h-4 ml-1 align-middle" />)</span
+					>
+				{/if}
 			</Button>
 
 			<!-- <Button

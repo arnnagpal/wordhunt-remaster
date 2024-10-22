@@ -142,6 +142,21 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
                 ws.send(JSON.stringify({ action: "CANCEL_QUEUE" }));
                 break;
             }
+
+            case "SUBSCRIBE_QUEUE": {
+                // handle subscribe queue
+
+                ws.subscribe("queued-users");
+                break;
+            }
+
+            case "SUBSCRIBE_ONLINE": {
+                // handle subscribe online
+
+                ws.subscribe("online-users");
+                break;
+            }
+
             default:
                 console.log("Unknown action");
         }

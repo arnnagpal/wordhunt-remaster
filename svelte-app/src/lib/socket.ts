@@ -195,6 +195,23 @@ export class SocketClient {
 		);
 	}
 
+	subscribeQueuedUsers() {
+		// request to subscribe queued users
+		this.sendMessage(
+			JSON.stringify({
+				action: 'SUBSCRIBE_QUEUE'
+			})
+		);
+	}
+	subscribeOnlineUsers() {
+		// request to subscribe online users
+		this.sendMessage(
+			JSON.stringify({
+				action: 'SUBSCRIBE_ONLINE'
+			})
+		);
+	}
+
 	onMessage(callback: (data: object) => void): number {
 		this.listeners['message'] = this.listeners['message'] || [];
 		this.listeners['message'].push(callback);

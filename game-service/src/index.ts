@@ -1,7 +1,11 @@
 import dotenv from "dotenv";
 import { Elysia } from "elysia";
 import { MongoClient, RedisClient } from "wordhunt-utils/src/server";
-import { createWebSocket } from "./socket";
+import {
+    broadcastOnlineUsers,
+    broadcastQueuedUsers,
+    createWebSocket,
+} from "./socket";
 import {
     getAllGamesLength,
     getGame,
@@ -109,6 +113,11 @@ server.get(process.env.ORIGIN_PREFIX + "/leaderboard", async () => {
 });
 
 createWebSocket(server, secret, redis, mongo);
+
+setInterval(async () => {
+    await broadcastOnlineUsers(server);
+    await broadcastQueuedUsers(server);
+}, 3000);
 
 process.on("SIGINT", async () => {
     console.log("Received SIGINT, exiting gracefully");

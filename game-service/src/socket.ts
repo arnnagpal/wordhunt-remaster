@@ -4,7 +4,7 @@ import { validateJWT } from "oslo/jwt";
 import { MongoClient, RedisClient } from "wordhunt-utils/src/server";
 import { handleAction } from "./handlers/action";
 import { handleUpdates } from "./handlers/updates";
-import { removeFromQueue } from "./game/matchmaking";
+import { getQueueSize, removeFromQueue } from "./game/matchmaking";
 import { socketToGame } from "./game/game";
 
 export interface WebSocketUser {
@@ -29,6 +29,32 @@ export const connectedUsers: { [key: string]: any } = {};
 export const rooms: Rooms = {};
 
 const pingIntervals: { [key: string]: any } = {};
+
+export async function broadcastOnlineUsers(server: Elysia) {
+    const users = Object.values(connectedUsers).length;
+    server.server?.publish(
+        "online-users",
+        JSON.stringify({
+            action: "UPDATE_ONLINE_STATUS",
+            data: {
+                users,
+            },
+        })
+    );
+}
+
+export async function broadcastQueuedUsers(server: Elysia) {
+    const users = getQueueSize();
+    server.server?.publish(
+        "queued-users",
+        JSON.stringify({
+            action: "UPDATE_QUEUED_STATUS",
+            data: {
+                users,
+            },
+        })
+    );
+}
 
 export function createWebSocket(
     server: Elysia,
