@@ -195,12 +195,7 @@
 	<meta content="Word Hunt - In Game" name="description" />
 </svelte:head>
 
-<svelte:body
-	on:touchstart|nonpassive={touchHandler}
-	on:touchend|nonpassive={touchHandler}
-	on:touchmove|nonpassive={touchHandler}
-	on:touchcancel|nonpassive={touchHandler}
-/>
+<svelte:body class="select-none" />
 
 <GameOver
 	bind:open={gameDisabled}
