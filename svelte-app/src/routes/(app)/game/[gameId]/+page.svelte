@@ -184,10 +184,6 @@
 		socket.disconnect();
 		invalidateAll();
 	});
-
-	function touchHandler(e: TouchEvent) {
-		e.preventDefault();
-	}
 </script>
 
 <svelte:head>
@@ -195,16 +191,14 @@
 	<meta content="Word Hunt - In Game" name="description" />
 </svelte:head>
 
-<svelte:body class="select-none" />
-
 <GameOver
 	bind:open={gameDisabled}
 	bind:winner={gameWinner}
 	bind:waitingOn
 	bind:players={finishedPlayers}
 />
-<div class="flex flex-col justify-between items-center">
-	<div class="flex flex-col items-center h-1/4">
+<div class="flex flex-col justify-between items-center select-none">
+	<div class="flex flex-col items-center h-1/4 select-none">
 		<!--		game header   -->
 		<GameHeader
 			on:exit={() => {
@@ -218,7 +212,7 @@
 		/>
 	</div>
 
-	<div class="flex flex-col items-center w-screen h-[15vh] mt-20">
+	<div class="flex flex-col items-center w-screen h-[15vh] mt-20 select-none">
 		<!--    game score on top of board -->
 		{#if showScore}
 			<GameScore
@@ -230,7 +224,7 @@
 		{/if}
 	</div>
 
-	<div class="flex flex-col items-center h-[85vh]">
+	<div class="flex flex-col items-center h-[85vh] select-none">
 		<div>
 			<Game
 				bind:dictionary
