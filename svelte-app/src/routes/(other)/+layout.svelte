@@ -3,7 +3,6 @@
 	import { fly } from 'svelte/transition';
 	import { cubicIn, cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
-	import { isMobileDevice } from '$lib/utils';
 
 	export let data;
 
@@ -20,7 +19,7 @@
 		if (
 			screen.orientation.type !== 'portrait-primary' &&
 			screen.orientation.type !== 'portrait-secondary' &&
-			isMobileDevice
+			/Mobi/i.test(window.navigator.userAgent)
 		) {
 			showWarning = true;
 		} else {
@@ -28,7 +27,7 @@
 		}
 	}
 
-	onMount(async () => {
+	onMount(() => {
 		checkOrientation();
 
 		screen.orientation.addEventListener('change', () => {

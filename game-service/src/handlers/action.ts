@@ -1,4 +1,4 @@
-import { ActiveGame } from "wordhunt-utils";
+import { ActiveGame, Board } from "wordhunt-utils";
 import {
     createGame,
     getActiveGame,
@@ -14,6 +14,7 @@ import Elysia from "elysia";
 import { findMatch, removeFromQueue } from "../game/matchmaking";
 import { broadcastWinCondition, timerMap } from "./updates";
 import { addMessage } from "../game/chat";
+import { startDailyFor } from "../game/daily";
 
 export async function handleAction(server: Elysia, ws: any, message: any) {
     const userData = ws.data.store as WebSocketUser;
@@ -113,6 +114,12 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
                 break;
             }
 
+            case "DAILY": {
+                // handle daily game
+                await startDailyFor(userData);
+                break;
+            }
+
             case "QUEUE": {
                 // handle queue game
 
@@ -183,7 +190,12 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
     }
 }
 
-export async function createNewGame(data: any) {
+export async function createNewGame(
+    data: any,
+    opts?: {
+        board: Board;
+    }
+) {
     const gameData = data.data;
 
     const id = generateIdFromEntropySize(10);
@@ -230,7 +242,12 @@ export async function createNewGame(data: any) {
     }
 
     const singlePlayer = players.length === 1 || time === -1;
-    const board = createBoard(4);
+    let board: Board;
+    if (opts?.board) {
+        board = opts.board;
+    } else {
+        board = createBoard(4);
+    }
 
     const game = createGame({
         _id: id,
@@ -261,4 +278,6 @@ export async function createNewGame(data: any) {
             })
         );
     }
+
+    return game._id;
 }

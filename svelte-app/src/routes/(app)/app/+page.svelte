@@ -7,10 +7,11 @@
 	import { GamePreset } from 'wordhunt-utils';
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { SocketClient } from '$lib/socket';
-	import { HistoryIcon, Trophy, UserRoundSearch, MessageSquare } from 'lucide-svelte';
+	import { HistoryIcon, Trophy, UserRoundSearch, MessageSquare, Clock } from 'lucide-svelte';
 	import WaitingSpinner from '$lib/WaitingSpinner.svelte';
 	import { fade } from 'svelte/transition';
 	import { Separator } from '$lib/components/ui/separator';
+	import { formatFutureDate } from 'wordhunt-utils/src/utils';
 
 	export let data: PageData;
 
@@ -18,28 +19,44 @@
 
 	let queuing = false;
 
+	let dailyTime = data.daily.ends_at;
+
+	let time = Date.now();
+
 	let readyState = 0;
 
 	let onlineUsers = 0;
 	let queuedUsers = 0;
-	onMount(async () => {
+	onMount(() => {
 		console.log('Dashboard page loaded');
 
-		socket = new SocketClient(data.session.jwt);
-		socket.onStatusChange((status) => {
-			if ((status as any).status === 'closed') {
-				console.log('removed from queue');
-				queuing = false;
-			}
-			console.log('Socket status: ' + JSON.stringify(status));
-			socket = socket;
-			readyState = socket.client.readyState;
-		});
-		socket.onMessage(handleMessage);
+		const initializeSocket = async () => {
+			socket = new SocketClient(data.session.jwt);
+			socket.onStatusChange((status) => {
+				if ((status as any).status === 'closed') {
+					console.log('removed from queue');
+					queuing = false;
+				}
+				console.log('Socket status: ' + JSON.stringify(status));
+				socket = socket;
+				readyState = socket.client.readyState;
+			});
+			socket.onMessage(handleMessage);
 
-		await socket.setupSocket();
-		socket.subscribeOnlineUsers();
-		socket.subscribeQueuedUsers();
+			await socket.setupSocket();
+			socket.subscribeOnlineUsers();
+			socket.subscribeQueuedUsers();
+		};
+
+		initializeSocket();
+
+		const dailyInterval = setInterval(() => {
+			time = Date.now();
+		}, 1000);
+
+		return () => {
+			clearInterval(dailyInterval);
+		};
 	});
 
 	function handleMessage(data: object) {
@@ -91,6 +108,11 @@
 		console.log('Creating game with preset: ' + preset);
 
 		socket.createGame(preset, [data.user.id]);
+	}
+
+	async function startDaily() {
+		console.log('Starting daily');
+		socket.startDaily();
 	}
 
 	async function joinQueue() {
@@ -169,28 +191,6 @@
 				<Separator />
 			</div>
 
-			<div class="flex flex-row items-center justify-center">
-				<Label class="text-xl font-bold text-center mb-1">SINGLEPLAYER</Label>
-			</div>
-			<Button
-				class="transition-all duration-200 ease-in-out
-                 text-gray-900 text-xl
-                       rounded mb-2"
-				variant="default"
-				on:click={async () => await createSingleGame(GamePreset.Classic)}
-			>
-				Classic
-			</Button>
-			<Button
-				class="transition-all duration-200 ease-in-out
-                 text-gray-900 text-xl
-                      rounded mb-4"
-				variant="default"
-				on:click={async () => await createSingleGame(GamePreset.Unlimited)}
-			>
-				Unlimited
-			</Button>
-
 			<div class="relative">
 				<div class="absolute top-0 left-0">
 					<Button
@@ -214,6 +214,23 @@
                  text-gray-900 text-xl
                        rounded mb-2 flex flex-row items-center justify-center relative"
 				variant="default"
+				on:click={startDaily}
+			>
+				<span> Daily Board </span>
+				<span
+					in:fade
+					out:fade
+					class=" absolute right-3 ml-2 text-base text-gray-500 flex flex-row align-middle justify-center items-center"
+				>
+					{time < dailyTime ? 'Ends in ' + formatFutureDate(dailyTime) : 'Ended'}
+					<Clock class="w-4 h-4 ml-1 align-middle" /></span
+				>
+			</Button>
+			<Button
+				class="transition-all duration-200 ease-in-out
+                 text-gray-900 text-xl
+                       rounded mb-2 flex flex-row items-center justify-center relative"
+				variant="default"
 				on:click={joinQueue}
 			>
 				<span> Unrated </span>
@@ -229,31 +246,35 @@
 				{/if}
 			</Button>
 
-			<!-- <Button
-				class="transition-all duration-200 ease-in-out
-            text-gray-900 text-xl
-                  rounded mb-2"
-				variant="default"
-				on:click={joinQueue}
-			>
-				Competitive
-			</Button> -->
-
-			<Button
-				class="transition-all duration-200 ease-in-out
-                 text-gray-900 text-xl hover:bg-gray-200 bg-gray-200
-                       rounded mb-2"
-				variant="default"
-			>
-				Competitive (WIP)
-			</Button>
 			<Button
 				class="transition-all duration-200 ease-in-out
                  text-gray-900 text-xl hover:bg-gray-200 bg-gray-200
                        rounded mb-4"
 				variant="default"
 			>
-				Custom (WIP)
+				Competitive (WIP)
+			</Button>
+
+			<div class="flex flex-row items-center justify-center">
+				<Label class="text-xl font-bold text-center mb-1">SINGLEPLAYER</Label>
+			</div>
+			<Button
+				class="transition-all duration-200 ease-in-out
+                 text-gray-900 text-xl
+                       rounded mb-2"
+				variant="default"
+				on:click={async () => await createSingleGame(GamePreset.Classic)}
+			>
+				Classic
+			</Button>
+			<Button
+				class="transition-all duration-200 ease-in-out
+                 text-gray-900 text-xl
+                      rounded mb-4"
+				variant="default"
+				on:click={async () => await createSingleGame(GamePreset.Unlimited)}
+			>
+				Unlimited
 			</Button>
 		</div>
 	</div>

@@ -14,8 +14,6 @@ type FlyAndScaleParams = {
 	duration?: number;
 };
 
-export const isMobileDevice = /Mobi/i.test(window.navigator.userAgent);
-
 export const flyAndScale = (
 	node: Element,
 	params: FlyAndScaleParams = { y: -8, x: 0, start: 0.95, duration: 150 }

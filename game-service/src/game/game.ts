@@ -1,10 +1,10 @@
-import { ActiveGame, Game } from "wordhunt-utils";
+import { ActiveGame, Board, Game, GamePreset } from "wordhunt-utils";
 import { mongo } from "..";
 import {
     GamePlayer,
     LiveGamePlayer,
 } from "wordhunt-utils/src/types/game-player";
-import { WebSocketUser } from "../socket";
+import { playersToDailyGame, reportScore } from "./daily";
 
 const finishedGames: Game[] = [];
 const activeGames: ActiveGame[] = [];
@@ -259,12 +259,18 @@ export const finishGame = (game: ActiveGame, winner: string) => {
         ended_at: Date.now(),
     } as any;
 
+    let winnerPlayer: GamePlayer | null = null;
+
     finishedG.session_type = 1;
 
     for (const player of finishedG.players) {
         delete player.game_id;
         delete player.letters_selected;
         delete player.time_left;
+
+        if (player.username === winner) {
+            winnerPlayer = player;
+        }
     }
 
     finishedG.players = finishedG.players as GamePlayer[];
@@ -273,6 +279,11 @@ export const finishGame = (game: ActiveGame, winner: string) => {
 
     activeGames.splice(activeGames.indexOf(game), 1);
     finishedGames.push(finishedG);
+
+    if (winnerPlayer && playersToDailyGame.has(winnerPlayer.id)) {
+        playersToDailyGame.delete(winnerPlayer.id);
+        reportScore(winnerPlayer);
+    }
 
     saveGame(finishedG); // push game to mongo async
 };

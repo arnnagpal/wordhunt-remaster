@@ -4,7 +4,6 @@
 	import { cubicIn, cubicOut } from 'svelte/easing';
 	import type { LayoutData } from './$types';
 	import { onMount } from 'svelte';
-	import { isMobileDevice } from '$lib/utils';
 
 	export let data: LayoutData;
 
@@ -21,7 +20,7 @@
 		if (
 			screen.orientation.type !== 'portrait-primary' &&
 			screen.orientation.type !== 'portrait-secondary' &&
-			isMobileDevice
+			/Mobi/i.test(window.navigator.userAgent)
 		) {
 			showWarning = true;
 		} else {

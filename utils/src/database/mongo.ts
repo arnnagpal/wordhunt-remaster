@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 import { gameSchema } from "../mongo/schemas/game";
 import { userSchema } from "../mongo/schemas/user";
-import { Game } from "../types/game";
+import { DailyGame, Game } from "../types/game";
 import { User } from "../types/user";
 import { leaderboardSchema } from "../mongo/schemas/leaderboard";
 import { LeaderboardRecord } from "../types/leaderboard";
 import { MongoMessage } from "../types/message";
 import { messageSchema } from "../mongo/schemas/message";
+import { dailySchema } from "../mongo/schemas/daily";
 
 export class MongoClient {
     private connectionString: string;
@@ -14,6 +15,8 @@ export class MongoClient {
     public Game: mongoose.Model<Game>;
     public Leaderboard: mongoose.Model<LeaderboardRecord>;
     public Chat: mongoose.Model<MongoMessage>;
+
+    public Daily: mongoose.Model<DailyGame>;
 
     constructor(connectionString: string) {
         if (!connectionString) {
@@ -30,6 +33,9 @@ export class MongoClient {
         this.Chat =
             mongoose.models.messages ||
             mongoose.model("messages", messageSchema);
+
+        this.Daily =
+            mongoose.models.daily || mongoose.model("daily", dailySchema);
     }
 
     async connect() {

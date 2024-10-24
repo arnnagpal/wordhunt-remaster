@@ -7,83 +7,23 @@
 	import { Info } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+	import { onMount } from 'svelte';
 
 	export let data: PageData;
 
 	let open = false;
 
-	// let leaderboard = [
-	// 	{
-	// 		username: 'aryan',
-	// 		score: 2000000
-	// 	},
-	// 	{
-	// 		username: 'dummy',
-	// 		score: 90
-	// 	},
-	// 	{
-	// 		username: 'dummy2',
-	// 		score: 80
-	// 	},
-	// 	{
-	// 		username: 'nobody',
-	// 		score: 70
-	// 	},
-	// 	{
-	// 		username: 'whosthat',
-	// 		score: 60
-	// 	},
-	// 	{
-	// 		username: 'isaidnobody',
-	// 		score: 50
-	// 	},
-	// 	{
-	// 		username: 'wdym',
-	// 		score: 40
-	// 	},
-	// 	{
-	// 		username: 'areyoudeafisaidnobody',
-	// 		score: 39
-	// 	},
-	// 	{
-	// 		username: 'nooyudidnt',
-	// 		score: 38
-	// 	},
-	// 	{
-	// 		username: 'yesidid',
-	// 		score: 37
-	// 	},
-	// 	{
-	// 		username: 'noyoudidnt',
-	// 		score: 36
-	// 	},
-	// 	{
-	// 		username: 'yesidid',
-	// 		score: 35
-	// 	},
-	// 	{
-	// 		username: 'noyoudidnt',
-	// 		score: 34
-	// 	},
-	// 	{
-	// 		username: 'yesidid',
-	// 		score: 33
-	// 	},
-	// 	{
-	// 		username: 'yesidid',
-	// 		score: 32
-	// 	},
-	// 	{
-	// 		username: 'yesidid',
-	// 		score: 31
-	// 	},
-	// 	{
-	// 		username: 'yesidid',
-	// 		score: 30
-	// 	}
-	// ];
+	let type = 'daily';
 
-	const leaderboard = data.leaderboard;
+	let leaderboard: any[] = [];
+
+	onMount(() => {
+		if (type === 'daily') {
+			leaderboard = data.daily;
+		} else {
+			leaderboard = data.avgScore;
+		}
+	});
 
 	let vw = 0;
 
@@ -114,6 +54,14 @@
 	}
 
 	function getUsername(username: string, vw: number) {
+		if (type === 'daily') {
+			if (vw < 640) {
+				return username.slice(0, 6) + (username.length > 6 ? '...' : '');
+			}
+
+			return username.slice(0, 15) + (username.length > 15 ? '...' : '');
+		}
+
 		// get viewports width
 		if (vw < 640) {
 			return username.slice(0, 10) + (username.length > 10 ? '...' : '');
@@ -183,13 +131,52 @@
 					>LEADERBOARD</Label
 				>
 
-				<div class="absolute top-0 right-0 mt-[3px] sm:mt-[8px]">
-					<Button variant="ghost" class="h-7 p-2 py-5 text-3xl" on:click={() => (open = true)}>
-						<Info class="h-6 w-6" />
+				{#if type !== 'daily'}
+					<div class="absolute top-0 right-0 mt-[3px] sm:mt-[8px]">
+						<Button variant="ghost" class="h-7 p-2 py-5 text-3xl" on:click={() => (open = true)}>
+							<Info class="h-6 w-6" />
+						</Button>
+					</div>
+				{/if}
+
+				<!-- nav bar -->
+				<div class="flex justify-center items-center gap-4">
+					<Button
+						variant="ghost"
+						class="text-lg sm:text-2xl {type === 'daily' ? 'bg-accent' : ''}"
+						on:click={() => {
+							type = 'daily';
+							leaderboard = data.daily;
+						}}
+					>
+						DAILY
+					</Button>
+					<Button
+						variant="ghost"
+						class="text-lg sm:text-2xl {type === 'avgScore' ? 'bg-accent' : ''}"
+						on:click={() => {
+							type = 'avgScore';
+							leaderboard = data.avgScore;
+						}}
+					>
+						AVG SCORE
 					</Button>
 				</div>
+
 				<Separator />
 			</div>
+
+			<!-- column titles -->
+			<div class="flex justify-between items-center w-full p-4 rounded-lg py-2 bg-slate-200">
+				<div class="[flex-grow:_2] w-max relative flex flex-row">
+					<Label class="text-sm sm:text-lg left-0">#</Label>
+					<Label class="absolute text-sm sm:text-lg left-8 sm:left-16"
+						>@USER {type === 'daily' ? '- #WORDS' : ''}</Label
+					>
+				</div>
+				<Label class="text-md sm:text-lg">SCORE</Label>
+			</div>
+
 			<div class="flex flex-col w-full">
 				{#each leaderboard as player, i}
 					<div
@@ -199,17 +186,29 @@
 					>
 						<div class="[flex-grow:_2] w-max relative flex flex-row">
 							<Label class="text-lg sm:text-2xl left-0">{i + 1}</Label>
-							{#if i < 3}
-								<ShinyText
-									text={'@' + getUsername(player.username, vw)}
-									class="absolute left-8 sm:left-16 text-lg sm:text-2xl"
-									color={getColor(i)}
-								/>
-							{:else}
-								<Label class="absolute text-lg sm:text-2xl left-8 sm:left-16">
-									{'@' + getUsername(player.username, vw)}
-								</Label>
-							{/if}
+							<div class="absolute left-8 sm:left-16 flex flex-row w-max gap-2">
+								{#if i < 3}
+									<ShinyText
+										text={'@' + getUsername(player.username, vw)}
+										class="text-lg sm:text-2xl"
+										color={getColor(i)}
+									/>
+									{#if type === 'daily'}
+										<Label class="text-lg sm:text-2xl"
+											>- &nbsp;{player.words.length < 100 ? player.words.length : '100+'}</Label
+										>
+									{/if}
+								{:else}
+									<Label class="text-lg sm:text-2xl">
+										{'@' + getUsername(player.username, vw)}
+									</Label>
+									{#if type === 'daily'}
+										<Label class="text-lg sm:text-2xl"
+											>- &nbsp;{player.words.length < 100 ? player.words.length : '100+'}</Label
+										>
+									{/if}
+								{/if}
+							</div>
 						</div>
 						<div class="flex-grow relative flex flex-row h-full text-right justify-end gap-2">
 							<Label class="text-lg sm:text-2xl">{formatScore(player.score)}</Label>

@@ -11,18 +11,19 @@ export const load: PageServerLoad = async (event: any) => {
 	}
 
 	// fetch game
-	const leaderboardFetch = await fetch(`${PUBLIC_GAME_SERVICE_URL}/leaderboard`);
+	const dailyLeaderboard = await fetch(`${PUBLIC_GAME_SERVICE_URL}/leaderboard/daily`);
+	const avgScoreLeaderboard = await fetch(`${PUBLIC_GAME_SERVICE_URL}/leaderboard/avgscore`);
 
-	if (!leaderboardFetch.ok) {
+	if (!dailyLeaderboard.ok || !avgScoreLeaderboard.ok) {
 		console.log('Leaderboard not found');
 		return redirect(302, '/app');
 	}
 
-	const leaderboard = await leaderboardFetch.json();
-
-	console.log(leaderboard);
+	const daily = await dailyLeaderboard.json();
+	const avgScore = await avgScoreLeaderboard.json();
 
 	return {
-		leaderboard
+		daily,
+		avgScore
 	};
 };

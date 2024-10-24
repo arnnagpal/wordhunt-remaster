@@ -8,8 +8,9 @@
 	import { SocketClient } from '$lib/socket';
 	import { onMount } from 'svelte';
 	import WaitingSpinner from '$lib/WaitingSpinner.svelte';
-	import { fly, scale, slide } from 'svelte/transition';
-	import { backOut, bounceInOut, bounceOut, elasticInOut, elasticOut } from 'svelte/easing';
+	import { scale } from 'svelte/transition';
+	import { backOut } from 'svelte/easing';
+	import { formatPreviousDate } from 'wordhunt-utils/src/utils';
 
 	export let data: PageData;
 
@@ -139,33 +140,6 @@
 		}
 		return score.toLocaleString();
 	}
-
-	function formatDate(dateNum: number) {
-		const date = new Date(dateNum);
-
-		// within 1 minute from Date.now()
-		if (Date.now() - date.getTime() <= 60000) {
-			return 'now';
-		}
-
-		// within 1 hour from Date.now()
-		if (Date.now() - date.getTime() <= 3600000) {
-			return `${Math.floor((Date.now() - date.getTime()) / 60000)}m ago`;
-		}
-
-		// within 1 day from Date.now()
-		if (Date.now() - date.getTime() <= 86400000) {
-			return `${Math.floor((Date.now() - date.getTime()) / 3600000)}h ago`;
-		}
-
-		// within 1 week from Date.now()
-		if (Date.now() - date.getTime() <= 604800000) {
-			return `${Math.floor((Date.now() - date.getTime()) / 86400000)}d ago`;
-		}
-
-		// show date
-		return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-	}
 </script>
 
 <svelte:head>
@@ -217,7 +191,7 @@
 						<ChatMessage
 							username={chatMsg.username}
 							message={chatMsg.message}
-							time={formatDate(chatMsg.created_at)}
+							time={formatPreviousDate(chatMsg.created_at)}
 							subText={`Avg Score: ${formatScore(chatMsg.avgScore)}`}
 						/>
 					</div>

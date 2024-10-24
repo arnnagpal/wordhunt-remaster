@@ -22,6 +22,11 @@ import {
 } from "./game/leaderboard";
 import cors from "@elysiajs/cors";
 import { getMessages, loadMessages } from "./game/chat";
+import {
+    getCurrentDaily,
+    getDailyLeaderboard,
+    loadDailies,
+} from "./game/daily";
 
 dotenv.config();
 
@@ -55,6 +60,7 @@ await loadDictionary();
 
 // load game history
 await loadGameHistory();
+await loadDailies();
 
 await loadLeaderboard();
 await reloadLeaderboard();
@@ -67,6 +73,25 @@ const server = new Elysia({
         hostname: process.env.HOSTNAME,
     },
 });
+
+server.get(
+    process.env.ORIGIN_PREFIX + "/game/daily-status",
+    async (req: any) => {
+        let daily: any = getCurrentDaily();
+        // deep copy daily to avoid modifying the original
+        daily = JSON.parse(JSON.stringify(daily));
+
+        delete daily.participants;
+        delete daily.board;
+        delete daily._id;
+        delete daily.__v;
+        return new Response(JSON.stringify(daily), {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+    }
+);
 
 server.get(process.env.ORIGIN_PREFIX + "/game/:id/status", async (req: any) => {
     const gameID = req.params.id;
@@ -106,8 +131,18 @@ server.get(process.env.ORIGIN_PREFIX + "/game/:id/status", async (req: any) => {
     });
 });
 
-server.get(process.env.ORIGIN_PREFIX + "/leaderboard", async () => {
+server.get(process.env.ORIGIN_PREFIX + "/leaderboard/avgscore", async () => {
     const leaders = getLeaders(20);
+
+    return new Response(JSON.stringify(leaders), {
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+});
+
+server.get(process.env.ORIGIN_PREFIX + "/leaderboard/daily", async () => {
+    const leaders = await getDailyLeaderboard();
 
     return new Response(JSON.stringify(leaders), {
         headers: {

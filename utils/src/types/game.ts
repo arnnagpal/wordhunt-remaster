@@ -12,6 +12,15 @@ export interface Game {
     single_player: boolean;
 }
 
+export interface DailyGame {
+    _id: string;
+    board: string;
+    timer: number;
+    started_at: number;
+    ends_at: number;
+    participants: GamePlayer[];
+}
+
 export interface ActiveGame {
     _id: string;
     session_type: number;

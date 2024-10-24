@@ -128,6 +128,15 @@ export class SocketClient {
 		);
 	}
 
+	startDaily() {
+		// request to start daily game
+		this.sendMessage(
+			JSON.stringify({
+				action: 'DAILY'
+			})
+		);
+	}
+
 	leaveQueue() {
 		// request to leave queue
 		this.sendMessage(
