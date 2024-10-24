@@ -146,16 +146,6 @@ export class SocketClient {
 		);
 	}
 
-	startTimer() {
-		// request to start timer
-		this.sendMessage(
-			JSON.stringify({
-				updateType: 'START_TIME',
-				data: {}
-			})
-		);
-	}
-
 	selectLetter(letter: string, index: number, row: number, col: number): Promise<boolean> {
 		return new Promise<boolean>((resolve, _reject) => {
 			// const listenerIdx = this.onMessage((data: object) => {

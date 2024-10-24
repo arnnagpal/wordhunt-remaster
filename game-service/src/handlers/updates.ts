@@ -110,9 +110,6 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
 
     const updateType = data.updateType as UpdateType;
     switch (updateType) {
-        case "START_TIME": {
-            break;
-        }
         case "LETTER_SELECT": {
             // handle letter select
             const { row, col, letter, index } = data.data;
