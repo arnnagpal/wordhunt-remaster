@@ -7,7 +7,7 @@
 	import { GamePreset } from 'wordhunt-utils';
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { SocketClient } from '$lib/socket';
-	import { HistoryIcon, Trophy, UserRoundSearch } from 'lucide-svelte';
+	import { HistoryIcon, Trophy, UserRoundSearch, MessageSquare } from 'lucide-svelte';
 	import WaitingSpinner from '$lib/WaitingSpinner.svelte';
 	import { fade } from 'svelte/transition';
 	import { Separator } from '$lib/components/ui/separator';
@@ -192,14 +192,20 @@
 			</Button>
 
 			<div class="relative">
-				<Label class="block m-auto text-xl font-bold text-center mb-1">MULTIPLAYER</Label>
-				<div class="absolute top-0 right-0">
+				<div class="absolute top-0 left-0">
 					<Button
 						variant="outline"
 						class="ml-auto mr-0 h-7 p-2"
 						on:click={() => goto('/leaderboard')}
 					>
 						<Trophy class="w-5 h-5" />
+					</Button>
+				</div>
+				<Label class="block m-auto text-xl font-bold text-center mb-1">MULTIPLAYER</Label>
+
+				<div class="absolute top-0 right-0">
+					<Button variant="outline" class="mr-auto ml-0 h-7 p-2" on:click={() => goto('/chat')}>
+						<MessageSquare class="w-5 h-5" />
 					</Button>
 				</div>
 			</div>

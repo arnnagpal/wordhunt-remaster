@@ -13,6 +13,7 @@ import { createBoard } from "wordhunt-utils/src/dictionary/board";
 import Elysia from "elysia";
 import { findMatch, removeFromQueue } from "../game/matchmaking";
 import { broadcastWinCondition, timerMap } from "./updates";
+import { addMessage } from "../game/chat";
 
 export async function handleAction(server: Elysia, ws: any, message: any) {
     const userData = ws.data.store as WebSocketUser;
@@ -143,6 +144,18 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
                 break;
             }
 
+            case "MESSAGE": {
+                // handle chat message
+                const message = data.data.message;
+                addMessage(server, {
+                    user_id: userData.id,
+                    username: userData.username,
+                    message: message,
+                });
+
+                break;
+            }
+
             case "SUBSCRIBE_QUEUE": {
                 // handle subscribe queue
 
@@ -154,6 +167,13 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
                 // handle subscribe online
 
                 ws.subscribe("online-users");
+                break;
+            }
+
+            case "SUBSCRIBE_CHAT": {
+                // handle subscribe chat
+
+                ws.subscribe("chat");
                 break;
             }
 

@@ -16,10 +16,12 @@ import { loadDictionary } from "wordhunt-utils/src/dictionary/letters";
 import { setupMatchmaking } from "./game/matchmaking";
 import {
     getLeaders,
+    getUserScore,
     loadLeaderboard,
     reloadLeaderboard,
 } from "./game/leaderboard";
 import cors from "@elysiajs/cors";
+import { getMessages, loadMessages } from "./game/chat";
 
 dotenv.config();
 
@@ -57,6 +59,8 @@ await loadGameHistory();
 await loadLeaderboard();
 await reloadLeaderboard();
 setupMatchmaking();
+
+await loadMessages();
 
 const server = new Elysia({
     serve: {
@@ -106,6 +110,23 @@ server.get(process.env.ORIGIN_PREFIX + "/leaderboard", async () => {
     const leaders = getLeaders(20);
 
     return new Response(JSON.stringify(leaders), {
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+});
+
+server.get(process.env.ORIGIN_PREFIX + "/chat", async () => {
+    let messages: any[] = await getMessages(20);
+
+    messages = messages.map((m) => ({
+        username: m.username,
+        message: m.message,
+        created_at: m.created_at,
+        avgScore: getUserScore(m.user_id),
+    }));
+
+    return new Response(JSON.stringify(messages), {
         headers: {
             "Content-Type": "application/json",
         },

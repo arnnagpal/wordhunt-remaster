@@ -82,6 +82,10 @@ export const reloadLeaderboard = async () => {
     }
 };
 
+export const getUserScore = (userId: string) => {
+    return leaderboard[userId]?.score || 0;
+};
+
 export const getLeaders = (count: number) => {
     // get values from the leaderboard
     let values = Object.values(leaderboard);

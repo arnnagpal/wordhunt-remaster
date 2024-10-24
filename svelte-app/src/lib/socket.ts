@@ -195,6 +195,15 @@ export class SocketClient {
 		);
 	}
 
+	subscribeChat() {
+		// request to subscribe chat
+		this.sendMessage(
+			JSON.stringify({
+				action: 'SUBSCRIBE_CHAT'
+			})
+		);
+	}
+
 	subscribeQueuedUsers() {
 		// request to subscribe queued users
 		this.sendMessage(
