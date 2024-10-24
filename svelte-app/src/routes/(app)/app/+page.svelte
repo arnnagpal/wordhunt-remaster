@@ -222,7 +222,7 @@
 					out:fade
 					class=" absolute right-3 ml-2 text-base text-gray-500 flex flex-row align-middle justify-center items-center"
 				>
-					{time < dailyTime ? 'Ends in ' + formatFutureDate(dailyTime) : 'Ended'}
+					{time < dailyTime ? formatFutureDate(dailyTime) : 'Ended'}
 					<Clock class="w-4 h-4 ml-1 align-middle" /></span
 				>
 			</Button>
