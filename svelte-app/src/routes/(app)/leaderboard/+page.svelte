@@ -170,49 +170,54 @@
 			<div class="flex justify-between items-center w-full p-4 rounded-lg py-2 bg-slate-200">
 				<div class="[flex-grow:_2] w-max relative flex flex-row">
 					<Label class="text-sm sm:text-lg left-0">#</Label>
-					<Label class="absolute text-sm sm:text-lg left-8 sm:left-16"
-						>@USER {type === 'daily' ? '- #WORDS' : ''}</Label
-					>
+					<Label class="absolute text-sm sm:text-lg left-8 sm:left-16">@USER</Label>
 				</div>
-				<Label class="text-md sm:text-lg">SCORE</Label>
+				<div class="flex flex-col text-right">
+					<Label class="text-md sm:text-lg">SCORE</Label>
+					<Label class="-mt-1 text-xs"># words</Label>
+				</div>
 			</div>
 
 			<div class="flex flex-col w-full">
 				{#each leaderboard as player, i}
 					<div
-						class="flex justify-between items-center w-full p-4 rounded-lg py-2 {i % 2 == 0
+						class="flex justify-between items-center w-full p-4 min-h-fit rounded-lg py-2 {i % 2 ==
+						0
 							? 'bg-slate-200'
 							: ''}"
 					>
-						<div class="[flex-grow:_2] w-max relative flex flex-row">
+						<div
+							class="[flex-grow:_2] w-max {type === 'daily'
+								? 'min-h-12'
+								: ''} relative flex flex-row items-center"
+						>
 							<Label class="text-lg sm:text-2xl left-0">{i + 1}</Label>
-							<div class="absolute left-8 sm:left-16 flex flex-row w-max gap-2">
+							<div class="absolute left-8 sm:left-16 flex flex-col w-max">
 								{#if i < 3}
 									<ShinyText
 										text={'@' + getUsername(player.username, vw)}
 										class="text-lg sm:text-2xl"
 										color={getColor(i)}
 									/>
-									{#if type === 'daily'}
-										<Label class="text-lg sm:text-2xl"
-											>- &nbsp;{player.words.length < 100 ? player.words.length : '100+'}</Label
-										>
-									{/if}
 								{:else}
 									<Label class="text-lg sm:text-2xl">
 										{'@' + getUsername(player.username, vw)}
 									</Label>
-									{#if type === 'daily'}
-										<Label class="text-lg sm:text-2xl"
-											>- &nbsp;{player.words.length < 100 ? player.words.length : '100+'}</Label
-										>
-									{/if}
 								{/if}
 							</div>
 						</div>
-						<div class="flex-grow relative flex flex-row h-full text-right justify-end gap-2">
-							<Label class="text-lg sm:text-2xl">{formatScore(player.score)}</Label>
-							<Label class="text-lg sm:text-2xl">{getEmoji(i)}</Label>
+						<div class="flex-grow w-full h-full flex flex-col justify-center">
+							<div class="w-full h-full relative flex flex-row text-right justify-end gap-2">
+								<Label class="text-lg sm:text-2xl">{formatScore(player.score)}</Label>
+								<Label class="text-lg sm:text-2xl">{getEmoji(i)}</Label>
+							</div>
+							{#if type === 'daily'}
+								<div class="w-full h-full relative flex text-right justify-end">
+									<Label class="-mt-1 text-sm sm:text-md"
+										>{player.words.length < 100 ? player.words.length : '100+'} words</Label
+									>
+								</div>
+							{/if}
 						</div>
 					</div>
 				{/each}
