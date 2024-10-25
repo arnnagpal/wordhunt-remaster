@@ -202,7 +202,7 @@
 	<meta content="Word Hunt - In Game" name="description" />
 </svelte:head>
 
-{#if !socket || socket.client.readyState !== 1}
+{#if !socket || (socket.client && socket.client.readyState !== 1)}
 	<WaitingSpinner />
 {/if}
 
