@@ -10,7 +10,7 @@ import { getPoints } from "wordhunt-utils/src/utils";
 import Elysia from "elysia";
 import { updateScore } from "../game/leaderboard";
 
-export const timerMap = new Map<number, Timer>();
+export const timerMap = new Map<string, Timer>();
 
 export async function broadcastWinCondition(
     game: ActiveGame,
@@ -239,9 +239,9 @@ export async function handleUpdates(server: Elysia, ws: any, message: any) {
                 return;
             }
 
-            if (timerMap.has(playerIdx)) {
-                clearInterval(timerMap.get(playerIdx));
-                timerMap.delete(playerIdx);
+            if (timerMap.has(player.id)) {
+                clearInterval(timerMap.get(player.id));
+                timerMap.delete(player.id);
             }
 
             player.time_left = 0;

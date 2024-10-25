@@ -65,7 +65,7 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
                     })
                 );
 
-                if (timerMap.has(playerIdx)) {
+                if (timerMap.has(player.id)) {
                     // timer already started
                     return;
                 }
@@ -76,7 +76,7 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
                 }
 
                 timerMap.set(
-                    playerIdx,
+                    player.id,
                     setInterval(() => {
                         if (
                             player.time_left <= 0 ||
@@ -86,8 +86,8 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
                             saveGame(game);
                         }
                         if (player.time_left <= 0) {
-                            clearInterval(timerMap.get(playerIdx));
-                            timerMap.delete(playerIdx);
+                            clearInterval(timerMap.get(player.id));
+                            timerMap.delete(player.id);
 
                             broadcastWinCondition(
                                 game,
