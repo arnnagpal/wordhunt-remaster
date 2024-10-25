@@ -255,6 +255,6 @@ export class SocketClient {
 	}
 
 	disconnect() {
-		this.client.close();
+		if (this.client) this.client.close();
 	}
 }
