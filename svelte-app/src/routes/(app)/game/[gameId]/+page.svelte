@@ -10,6 +10,7 @@
 	import { SocketClient } from '$lib/socket';
 	import GameOver from '$lib/GameOver.svelte';
 	import { Trie } from 'wordhunt-utils/src/dictionary/dictionary';
+	import WaitingSpinner from '$lib/WaitingSpinner.svelte';
 
 	export let data: PageData;
 
@@ -147,6 +148,18 @@
 		}
 	}
 
+	async function setupSocket() {
+		socket.onMessage(onSocketMessage);
+		socket.onStatusChange(async (statusData) => {
+			if ((statusData as any).status === 'closed' && (statusData as any).code === 1006) {
+				socket.disconnect();
+				await setupSocket();
+			}
+		});
+
+		await socket.setupSocket();
+	}
+
 	onMount(async () => {
 		if (!data.game_id) {
 			throw new Error('No game id provided');
@@ -160,9 +173,7 @@
 		const gamePlayer = data.game.players.find((player: any) => player.id === data.auth_user.id);
 		word_bank = gamePlayer?.words ?? [];
 
-		socket.onMessage(onSocketMessage);
-
-		await socket.setupSocket();
+		await setupSocket();
 
 		socket.joinGame(data.game_id);
 	});
@@ -190,6 +201,10 @@
 	<title>Word Hunt - In Game</title>
 	<meta content="Word Hunt - In Game" name="description" />
 </svelte:head>
+
+{#if !socket || socket.client.readyState !== 1}
+	<WaitingSpinner />
+{/if}
 
 <GameOver
 	bind:open={gameDisabled}
