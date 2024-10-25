@@ -158,6 +158,8 @@
 		});
 
 		await socket.setupSocket();
+
+		socket.joinGame(data.game_id);
 	}
 
 	onMount(async () => {
@@ -174,8 +176,6 @@
 		word_bank = gamePlayer?.words ?? [];
 
 		await setupSocket();
-
-		socket.joinGame(data.game_id);
 	});
 
 	beforeNavigate(async (navigation) => {

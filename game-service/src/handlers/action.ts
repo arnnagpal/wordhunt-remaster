@@ -30,6 +30,7 @@ export async function handleAction(server: Elysia, ws: any, message: any) {
             case "JOIN": {
                 // handle join game
                 const roomName = getRoomName(data.gameId, userData.id);
+
                 ws.subscribe(roomName);
                 const game = getActiveGame(data.gameId) as
                     | ActiveGame
